@@ -5,9 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  Index,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm'
 import { occupancyType } from '../utils/enums.js'
+import { Building } from './building.model.js'
+import { User } from './user.model.js'
+import { Bill } from './bill.model.js'
 
 @Entity()
 export class Apartment {
@@ -25,6 +31,7 @@ export class Apartment {
   occupancyType!: occupancyType
 
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -35,4 +42,13 @@ export class Apartment {
   fecha_eliminado!: Date
 
   //relations
+  @OneToMany(() => Bill, (bill) => bill.apartment)
+  bill!: Bill[]
+
+  @ManyToOne(() => Building, (building) => building.apartment)
+  building!: Building
+
+  @OneToOne(() => User, (user) => user.apartment)
+  @JoinColumn()
+  user!: User
 }

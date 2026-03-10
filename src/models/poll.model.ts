@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  Index,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm'
+import { User } from './user.model.js'
+import { Vote } from './vote.model.js'
 
 @Entity()
 export class Poll {
@@ -16,7 +19,11 @@ export class Poll {
   @Column()
   description!: string
 
+  @Column({ type: 'date' })
+  expires_at!: Date
+
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -27,4 +34,10 @@ export class Poll {
   fecha_eliminado!: Date
 
   //relations
+
+  @ManyToOne(() => User, (user) => user.poll)
+  user!: User
+
+  @OneToMany(() => Vote, (vote) => vote.user)
+  vote!: Vote[]
 }

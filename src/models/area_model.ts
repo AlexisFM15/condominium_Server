@@ -6,10 +6,12 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm'
+import { Schedule_area } from './schedule_area.model.js'
 
 @Entity()
-export class Service {
+export class Area {
   @PrimaryGeneratedColumn()
   id!: string
 
@@ -21,6 +23,7 @@ export class Service {
   description!: string
 
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -31,4 +34,7 @@ export class Service {
   fecha_eliminado!: Date
 
   //relations
+
+  @OneToMany(() => Schedule_area, (schedule_area) => schedule_area.area)
+  schedule_area!: Schedule_area[]
 }

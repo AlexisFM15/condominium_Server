@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
 } from 'typeorm'
 import { MovemntType } from '../utils/enums.js'
+import { Montlhy_balance } from './monthly_balance.model.js'
 
 @Entity()
 export class Movement {
@@ -17,7 +19,7 @@ export class Movement {
   name!: MovemntType
 
   @Column()
-  description!: string
+  description!: string // take from service and payment tables to complete this
 
   @Column()
   amount!: number
@@ -26,6 +28,7 @@ export class Movement {
   date!: Date
 
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -36,4 +39,10 @@ export class Movement {
   fecha_eliminado!: Date
 
   //relations
+
+  @ManyToOne(
+    () => Montlhy_balance,
+    (monthly_balance) => monthly_balance.movement,
+  )
+  monthly_balance!: Montlhy_balance
 }

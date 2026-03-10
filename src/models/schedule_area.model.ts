@@ -6,8 +6,11 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   Index,
+  ManyToOne,
 } from 'typeorm'
 import { StatusSchedule } from '../utils/enums.js'
+import { Area } from './area_model.js'
+import { User } from './user.model.js'
 
 @Entity()
 export class Schedule_area {
@@ -31,6 +34,7 @@ export class Schedule_area {
   status!: StatusSchedule
 
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -41,4 +45,10 @@ export class Schedule_area {
   fecha_eliminado!: Date
 
   //relations
+
+  @ManyToOne(() => Area, (area) => area.schedule_area)
+  area!: Area
+
+  @ManyToOne(() => User, (user) => user.schedule_area)
+  user!: User
 }

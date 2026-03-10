@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  Index,
 } from 'typeorm'
 import { Payment_Method } from '../utils/enums.js'
 

@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
 } from 'typeorm'
 import { BillStatus } from '../utils/enums.js'
+import { Apartment } from './apartment.model.js'
 
 @Entity()
 export class Bill {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('identity')
   id!: string
 
   @Column()
@@ -32,6 +34,7 @@ export class Bill {
   gas_pic!: string
 
   //timestamps
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -42,4 +45,7 @@ export class Bill {
   fecha_eliminado!: Date
 
   //relations
+
+  @ManyToOne(() => Apartment, (apartment) => apartment.bill)
+  apartment!: Apartment
 }

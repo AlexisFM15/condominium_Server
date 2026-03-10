@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm'
+import { Movement } from './movement.model.js'
 
 @Entity()
 export class Montlhy_balance {
@@ -27,7 +29,8 @@ export class Montlhy_balance {
   @Column()
   total!: number
 
-  //timestamps
+  //
+
   @CreateDateColumn()
   fecha_registro!: Date
 
@@ -38,4 +41,6 @@ export class Montlhy_balance {
   fecha_eliminado!: Date
 
   //relations
+  @OneToMany(() => Movement, (movement) => movement.monthly_balance)
+  movement!: Movement[]
 }

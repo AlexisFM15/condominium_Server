@@ -5,8 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  Index,
+  OneToMany,
 } from 'typeorm'
+import { Apartment } from './apartment.model.js'
 
 @Entity()
 export class Building {
@@ -30,4 +31,7 @@ export class Building {
   fecha_eliminado!: Date
 
   //relations
+
+  @OneToMany(() => Apartment, (apartment) => apartment.building)
+  apartment!: Apartment[]
 }

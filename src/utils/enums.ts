@@ -22,6 +22,7 @@ export enum Payment_Method {
 }
 
 export enum StatusSchedule {
+  CANCEL = 'Cancelada',
   PENDING = 'Pendiente',
   DONE = 'Completada', // reservation dealt
   FINISHED = 'Terminada',
