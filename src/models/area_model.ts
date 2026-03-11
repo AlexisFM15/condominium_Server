@@ -16,10 +16,10 @@ export class Area {
   id!: string
 
   @Index({ unique: true })
-  @Column()
+  @Column({ type: 'varchar' })
   name!: string
 
-  @Column()
+  @Column({ type: 'text' })
   description!: string
 
   //timestamps

@@ -15,7 +15,7 @@ export class Bill {
   @PrimaryGeneratedColumn('identity')
   id!: string
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount!: number
 
   @Column({ type: 'enum', enum: BillStatus, default: [BillStatus.PENDING] })
@@ -24,13 +24,13 @@ export class Bill {
   @Column({ type: 'date' })
   due_date!: Date
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   year!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   month!: string
 
-  @Column()
+  @Column({ type: 'varchar' })
   gas_pic!: string
 
   //timestamps

@@ -16,7 +16,7 @@ export class Poll {
   @PrimaryGeneratedColumn('identity')
   id!: number
 
-  @Column()
+  @Column({ type: 'text' })
   description!: string
 
   @Column({ type: 'date' })

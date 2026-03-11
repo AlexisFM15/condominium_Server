@@ -20,7 +20,7 @@ export class Apartment {
   @PrimaryGeneratedColumn()
   id!: string
 
-  @Column()
+  @Column({ type: 'int' })
   number!: number
 
   @Column({

@@ -15,7 +15,7 @@ export class Vote {
   @PrimaryGeneratedColumn()
   id!: string
 
-  @Column()
+  @Column({ type: 'varchar' })
   vote!: string
 
   //timestamps

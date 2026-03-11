@@ -13,10 +13,10 @@ export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
-  @Column()
+  @Column({ type: 'text' })
   description!: string
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount!: number
 
   @Column({ type: 'enum', enum: Payment_Method, nullable: false })

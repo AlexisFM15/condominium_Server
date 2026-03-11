@@ -14,19 +14,19 @@ export class Montlhy_balance {
   @PrimaryGeneratedColumn()
   id!: string
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   income!: number
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   expense!: number
 
-  @Column()
+  @Column({ type: 'varchar' })
   year!: Date
 
-  @Column()
+  @Column({ type: 'varchar' })
   month!: Date
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   total!: number
 
   //

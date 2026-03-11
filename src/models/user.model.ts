@@ -20,21 +20,21 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   name!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   lastname!: string
 
   @Index({ unique: true })
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   phone!: string
 
   @Index({ unique: true })
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   email!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   password!: string
 
   @Column({ type: 'enum', enum: Rol, default: [Rol.CONDOMINIUM] })

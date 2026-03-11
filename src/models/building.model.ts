@@ -14,10 +14,10 @@ export class Building {
   @PrimaryGeneratedColumn('identity')
   id!: number
 
-  @Column()
+  @Column({ type: 'varchar' })
   name!: string
 
-  @Column()
+  @Column({ type: 'text' })
   description!: string
 
   //timestamps

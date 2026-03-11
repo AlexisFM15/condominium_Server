@@ -18,10 +18,10 @@ export class Movement {
   @Column({ type: 'enum', enum: MovemntType, nullable: false })
   name!: MovemntType
 
-  @Column()
+  @Column({ type: 'text' })
   description!: string // take from service and payment tables to complete this
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount!: number
 
   @Column({ type: 'date' })
