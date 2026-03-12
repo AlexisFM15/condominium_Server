@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { DataSource } from 'typeorm'
 import { Apartment } from '../models/apartment.model.js'
 import { Area } from '../models/area_model.js'
@@ -16,7 +17,7 @@ const appDataSource = new DataSource({
   type: 'postgres',
   database: process.env.DB_NAME!,
   host: process.env.DB_HOST!,
-  port: parseInt(process.env.DB_PORT!),
+  port: parseInt(process.env.DB_PORT!) ,
   username: process.env.DB_USER!,
   password: process.env.DB_PASSWORD!,
   entities: [
@@ -41,7 +42,8 @@ const initializeDB = async () => {
   try {
     await appDataSource.initialize()
   } catch (error) {
-    console.log('database is unavailable')
+    console.log('database is unavailable', error)
+      console.log(process.env.DB_PORT)
   }
 }
 
