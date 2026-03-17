@@ -14,6 +14,7 @@ import { Poll } from './poll.model.js'
 import { Apartment } from './apartment.model.js'
 import { Vote } from './vote.model.js'
 import { Schedule_area } from './schedule_area.model.js'
+import { Session } from './session.model.js'
 
 @Entity()
 export class User {
@@ -64,4 +65,7 @@ export class User {
 
   @OneToMany(() => Vote, (vote) => vote.user)
   vote!: Vote[]
+
+  @OneToMany(() => Session, (session) => session.user)
+  session!: Session[]
 }

@@ -1,4 +1,4 @@
-import "dotenv/config"
+import 'dotenv/config'
 import { DataSource } from 'typeorm'
 import { Apartment } from '../models/apartment.model.js'
 import { Area } from '../models/area_model.js'
@@ -12,12 +12,13 @@ import { Schedule_area } from '../models/schedule_area.model.js'
 import { Service } from '../models/service.model.js'
 import { User } from '../models/user.model.js'
 import { Vote } from '../models/vote.model.js'
+import { Session } from '../models/session.model.js'
 
 const appDataSource = new DataSource({
   type: 'postgres',
   database: process.env.DB_NAME!,
   host: process.env.DB_HOST!,
-  port: parseInt(process.env.DB_PORT!) ,
+  port: parseInt(process.env.DB_PORT!),
   username: process.env.DB_USER!,
   password: process.env.DB_PASSWORD!,
   entities: [
@@ -33,6 +34,7 @@ const appDataSource = new DataSource({
     Service,
     User,
     Vote,
+    Session,
   ],
   synchronize: true,
   migrations: ['src/migrations/*{.ts,.js}'],
@@ -43,7 +45,7 @@ const initializeDB = async () => {
     await appDataSource.initialize()
   } catch (error) {
     console.log('database is unavailable', error)
-      console.log(process.env.DB_PORT)
+    console.log(process.env.DB_PORT)
   }
 }
 
