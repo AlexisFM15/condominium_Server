@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { DataSource } from 'typeorm'
 import { Apartment } from '../models/apartment.model.js'
-import { Area } from '../models/area_model.js'
+import { Area } from '../models/area.model.js'
 import { Bill } from '../models/bill.model.js'
 import { Building } from '../models/building.model.js'
 import { Montlhy_balance } from '../models/monthly_balance.model.js'
@@ -13,6 +13,7 @@ import { Service } from '../models/service.model.js'
 import { User } from '../models/user.model.js'
 import { Vote } from '../models/vote.model.js'
 import { Session } from '../models/session.model.js'
+import { Condominium } from '../models/condominium.model.js'
 
 const appDataSource = new DataSource({
   type: 'postgres',
@@ -35,6 +36,7 @@ const appDataSource = new DataSource({
     User,
     Vote,
     Session,
+    Condominium,
   ],
   synchronize: true,
   migrations: ['src/migrations/*{.ts,.js}'],

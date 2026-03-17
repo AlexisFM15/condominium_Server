@@ -5,11 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  Index,
   ManyToOne,
 } from 'typeorm'
 import { StatusSchedule } from '../utils/enums.js'
-import { Area } from './area_model.js'
+import { Area } from './area.model.js'
 import { User } from './user.model.js'
 
 @Entity()
