@@ -6,13 +6,11 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
-  ManyToOne,
 } from 'typeorm'
-import { Apartment } from './apartment.model.js'
-import { Condominium } from './condominium.model.js'
+import { Building } from './building.model.js'
 
 @Entity()
-export class Building {
+export class Condominium {
   @PrimaryGeneratedColumn('identity')
   id!: number
 
@@ -34,9 +32,6 @@ export class Building {
 
   //relations
 
-  @OneToMany(() => Apartment, (apartment) => apartment.building)
-  apartment!: Apartment[]
-
-  @ManyToOne(() => Condominium, (condominium) => condominium.building)
-  condominium!: Condominium
+  @OneToMany(() => Building, (building) => building.condominium)
+  building!: Building[]
 }
