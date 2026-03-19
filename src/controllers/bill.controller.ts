@@ -40,7 +40,7 @@ export const createBill = async (ctx: Context) => {
 export const getBills = async (ctx: Context) => {
   try {
     const bills = await billService.find({
-      relations: ['building'],
+      relations: ['apartmet'],
     })
 
     ctx.body = bills
@@ -57,7 +57,7 @@ export const getBillById = async (ctx: Context) => {
   try {
     const bill = await billService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: ['apartmet'],
     })
 
     if (!bill) {

@@ -31,7 +31,7 @@ export const createService = async (ctx: Context) => {
 export const getServices = async (ctx: Context) => {
   try {
     const services = await serviceService.find({
-      relations: ['building'],
+      relations: [''],
     })
 
     ctx.body = services
@@ -48,7 +48,7 @@ export const getServiceById = async (ctx: Context) => {
   try {
     const service = await serviceService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: [''],
     })
 
     if (!service) {

@@ -40,7 +40,7 @@ export const createUser = async (ctx: Context) => {
 export const getUsers = async (ctx: Context) => {
   try {
     const users = await userService.find({
-      relations: ['building'],
+      relations: ['apartment'],
     })
 
     ctx.body = users

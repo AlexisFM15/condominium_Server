@@ -29,9 +29,15 @@ export const createCondominium = async (ctx: Context) => {
 
 // GET ALL
 export const getCondominiums = async (ctx: Context) => {
-  const condominiums = await condominiumService.find()
+  try {
+    const condominiums = await condominiumService.find()
 
-  ctx.body = condominiums
+    ctx.status = 200
+    ctx.body = condominiums
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+  }
 }
 
 // GET ONE

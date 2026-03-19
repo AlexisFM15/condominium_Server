@@ -31,7 +31,7 @@ export const createArea = async (ctx: Context) => {
 export const getAreas = async (ctx: Context) => {
   try {
     const areas = await areaService.find({
-      relations: ['building'],
+      relations: [''],
     })
 
     ctx.body = areas
@@ -48,7 +48,7 @@ export const getAreaById = async (ctx: Context) => {
   try {
     const area = await areaService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: [''],
     })
 
     if (!area) {

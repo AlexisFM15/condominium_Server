@@ -31,7 +31,7 @@ export const createPayment = async (ctx: Context) => {
 export const getPayments = async (ctx: Context) => {
   try {
     const payments = await paymentService.find({
-      relations: ['building'],
+      relations: [''],
     })
 
     ctx.body = payments
@@ -48,7 +48,7 @@ export const getPaymentById = async (ctx: Context) => {
   try {
     const payment = await paymentService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: [''],
     })
 
     if (!payment) {

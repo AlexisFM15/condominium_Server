@@ -31,7 +31,7 @@ export const createVote = async (ctx: Context) => {
 export const getVotes = async (ctx: Context) => {
   try {
     const votes = await voteService.find({
-      relations: ['building'],
+      relations: ['user', 'poll'],
     })
 
     ctx.body = votes
@@ -48,7 +48,7 @@ export const getVoteById = async (ctx: Context) => {
   try {
     const vote = await voteService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: ['user', 'poll'],
     })
 
     if (!vote) {

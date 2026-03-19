@@ -37,7 +37,7 @@ export const createApartment = async (ctx: Context) => {
 export const getApartments = async (ctx: Context) => {
   try {
     const apartments = await apartmentService.find({
-      relations: ['building'],
+      relations: ['building', 'user'],
     })
 
     ctx.body = apartments

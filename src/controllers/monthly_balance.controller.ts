@@ -31,7 +31,7 @@ export const createMonthly_balance = async (ctx: Context) => {
 export const getMonthly_balances = async (ctx: Context) => {
   try {
     const monthly_balances = await monthly_balanceService.find({
-      relations: ['building'],
+      relations: [''],
     })
 
     ctx.body = monthly_balances
@@ -48,7 +48,7 @@ export const getMonthly_balanceById = async (ctx: Context) => {
   try {
     const monthly_balance = await monthly_balanceService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: [''],
     })
 
     if (!monthly_balance) {

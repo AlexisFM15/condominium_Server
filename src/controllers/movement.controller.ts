@@ -31,7 +31,7 @@ export const createMovement = async (ctx: Context) => {
 export const getMovements = async (ctx: Context) => {
   try {
     const movements = await movementService.find({
-      relations: ['building'],
+      relations: ['monthly_balance'],
     })
 
     ctx.body = movements
@@ -48,7 +48,7 @@ export const getMovementById = async (ctx: Context) => {
   try {
     const movement = await movementService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: ['monthly_balance'],
     })
 
     if (!movement) {

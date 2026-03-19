@@ -31,7 +31,7 @@ export const createPoll = async (ctx: Context) => {
 export const getPolls = async (ctx: Context) => {
   try {
     const polls = await pollService.find({
-      relations: ['building'],
+      relations: ['user'],
     })
 
     ctx.body = polls
@@ -48,7 +48,7 @@ export const getPollById = async (ctx: Context) => {
   try {
     const poll = await pollService.findOne({
       where: { id: params.id },
-      relations: ['building'],
+      relations: ['user'],
     })
 
     if (!poll) {

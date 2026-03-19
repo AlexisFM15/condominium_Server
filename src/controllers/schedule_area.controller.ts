@@ -39,7 +39,7 @@ export const createsShedule_area = async (ctx: Context) => {
 export const getSchedule_areas = async (ctx: Context) => {
   try {
     const schedule_areas = await schedule_areaService.find({
-      relations: ['building'],
+      relations: ['area', 'user'],
     })
 
     ctx.body = schedule_areas
