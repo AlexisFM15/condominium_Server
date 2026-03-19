@@ -11,8 +11,8 @@ import { Movement } from './movement.model.js'
 
 @Entity()
 export class Montlhy_balance {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   income!: number

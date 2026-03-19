@@ -12,8 +12,8 @@ import { Schedule_area } from './schedule_area.model.js'
 
 @Entity()
 export class Area {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Index({ unique: true })
   @Column({ type: 'varchar' })

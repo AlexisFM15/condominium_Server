@@ -17,8 +17,8 @@ import { Bill } from './bill.model.js'
 
 @Entity()
 export class Apartment {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Column({ type: 'int' })
   number!: number

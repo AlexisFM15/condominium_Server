@@ -29,9 +29,7 @@ export const createCondominium = async (ctx: Context) => {
 
 // GET ALL
 export const getCondominiums = async (ctx: Context) => {
-  const condominiums = await condominiumService.find({
-    relations: ['building'],
-  })
+  const condominiums = await condominiumService.find()
 
   ctx.body = condominiums
 }

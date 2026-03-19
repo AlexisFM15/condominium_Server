@@ -11,10 +11,10 @@ export const createUserSchema = z.object({
 
   // relaciones
   apartmentId: z.coerce.number().int().positive().optional(),
-  condominiumId: z.coerce.number().int().positive().optional(),
+  // condominiumId: z.coerce.number().int().positive().optional(),
 
   // flags
-  defaultPassword: z.boolean().optional(),
+  // defaultPassword: z.boolean().optional(),
 })
 
 export const updateUserSchema = z.object({

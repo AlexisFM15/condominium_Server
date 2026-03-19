@@ -12,8 +12,8 @@ import { Montlhy_balance } from './monthly_balance.model.js'
 
 @Entity()
 export class Movement {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Column({ type: 'enum', enum: MovemntType, nullable: false })
   name!: MovemntType

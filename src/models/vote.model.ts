@@ -12,8 +12,8 @@ import { Poll } from './poll.model.js'
 
 @Entity()
 export class Vote {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Column({ type: 'varchar' })
   vote!: string

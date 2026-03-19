@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import cors from '@koa/cors'
-import router from './routes/auth.route.js'
+import router from './routes/index.routes.js'
 
 const app = new koa()
 

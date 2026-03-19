@@ -13,7 +13,7 @@ import { Apartment } from './apartment.model.js'
 @Entity()
 export class Bill {
   @PrimaryGeneratedColumn('identity')
-  id!: string
+  id!: number
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount!: number

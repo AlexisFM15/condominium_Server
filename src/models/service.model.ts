@@ -10,8 +10,8 @@ import {
 
 @Entity()
 export class Service {
-  @PrimaryGeneratedColumn()
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Index({ unique: true })
   @Column({ type: 'varchar' })
