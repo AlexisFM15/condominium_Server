@@ -8,6 +8,8 @@ const app = new koa()
 
 app.use(cors())
 app.use(bodyParser())
+
+//routes config
 app.use(router.routes())
 app.use(router.allowedMethods())
 

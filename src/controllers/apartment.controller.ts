@@ -20,11 +20,13 @@ export const createApartment = async (ctx: Context) => {
     const apartment = apartmentService.create({
       number: result.data.number,
       occupancyType: result.data.occupancyType || occupancyType.VACANT,
+      rent: result.data.rent ?? 0,
       building: { id: result.data.buildingId },
       user: result.data.userId ? { id: result.data.userId } : {},
     })
-    await apartmentService.save(apartment)
+    const save = await apartmentService.save(apartment)
 
+    console.log(save)
     ctx.status = 201
     ctx.body = apartment
   } catch (error) {

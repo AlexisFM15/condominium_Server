@@ -30,6 +30,9 @@ export class Apartment {
   })
   occupancyType!: occupancyType
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  rent!: number
+
   //timestamps
 
   @CreateDateColumn()
