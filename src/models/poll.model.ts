@@ -19,6 +19,9 @@ export class Poll {
   @Column({ type: 'text' })
   description!: string
 
+  @Column({ type: 'int', nullable: true })
+  poll_result!: number
+
   @Column({ type: 'date' })
   expires_at!: Date
 

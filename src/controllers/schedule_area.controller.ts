@@ -7,6 +7,9 @@ import {
 import { schedule_areaService } from '../services/schedule_area.service.js'
 import { Schedule_area } from '../models/schedule_area.model.js'
 import { StatusSchedule } from '../utils/enums.js'
+import { sendBillEmail } from '../helpers/mailing.js'
+import { htmlSchedule, subjects } from '../utils/emailsFormart.js'
+import { userService } from '../services/user.service.js'
 
 // CREATE
 export const createsShedule_area = async (ctx: Context) => {
@@ -27,11 +30,26 @@ export const createsShedule_area = async (ctx: Context) => {
     })
     await schedule_areaService.save(schedule_area)
 
+    const user = await userService.findOne({
+      where: { id: schedule_area.user.id },
+    })
+
+    sendBillEmail(
+      subjects.areaSubject,
+      user?.email!,
+      htmlSchedule(
+        schedule_area.reservation_date,
+        schedule_area.start_time,
+        schedule_area.end_time,
+      ),
+    )
+
     ctx.status = 201
     ctx.body = schedule_area
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 
@@ -67,6 +85,7 @@ export const getSchedule_areaById = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 

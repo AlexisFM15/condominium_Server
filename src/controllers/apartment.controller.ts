@@ -21,6 +21,7 @@ export const createApartment = async (ctx: Context) => {
       number: result.data.number,
       occupancyType: result.data.occupancyType || occupancyType.VACANT,
       rent: result.data.rent ?? 0,
+      lastGasMetric: result.data.lastGasMetric ?? 0,
       building: { id: result.data.buildingId },
       user: result.data.userId ? { id: result.data.userId } : {},
     })

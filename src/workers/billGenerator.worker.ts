@@ -1,7 +1,7 @@
 import { CronJob } from 'cron'
 import database from '../config/database.js'
 import { billService } from '../services/bill.service.js'
-import { BillStatus, occupancyType } from '../utils/enums.js'
+import { BillStatus } from '../utils/enums.js'
 import { apartmentService } from '../services/apartment.service.js'
 
 // this worker function is daily validate if is a diferent month
@@ -14,8 +14,9 @@ export const billsMonthlyGenereation = async () => {
     const lastBillMonth = await billService.findLast()
 
     const job = CronJob.from({
-      cronTime: '0 0 * * *', // -> every nigth,
+      cronTime: '0 0 * * *', // -> every night
       onTick: async () => {
+        console.log('que pase')
         if (
           lastBillMonth?.month !==
           today.toLocaleString('es-DO', { month: 'long' })
@@ -23,7 +24,7 @@ export const billsMonthlyGenereation = async () => {
           const apartment = await apartmentService.find({
             relations: ['building', 'user'],
           })
-          // create a bill to evrey apartment existent
+          // create a bill to every apartment existent
           apartment.forEach((apa) => {
             const bill = billService.create({
               amount: apa.rent,

@@ -7,6 +7,9 @@ import {
 import { billService } from '../services/bill.service.js'
 import { Bill } from '../models/bill.model.js'
 import { BillStatus } from '../utils/enums.js'
+import { sendBillEmail } from '../helpers/mailing.js'
+import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
+import { apartmentService } from '../services/apartment.service.js'
 
 // CREATE
 export const createBill = async (ctx: Context) => {
@@ -40,13 +43,14 @@ export const createBill = async (ctx: Context) => {
 export const getBills = async (ctx: Context) => {
   try {
     const bills = await billService.find({
-      relations: ['apartmet'],
+      relations: ['apartment'],
     })
 
     ctx.body = bills
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 
@@ -119,5 +123,55 @@ export const deleteBill = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+  }
+}
+
+// update bill draft
+export const sendBill = async (ctx: Context) => {
+  const params = billParamsSchema.parse(ctx.params)
+  console.log(params)
+
+  try {
+    const result = updateBillSchema.safeParse(ctx.request.body)
+
+    if (!result.success) {
+      ctx.throw(400, result.error)
+    }
+
+    const bill = await billService.findOne({
+      where: { id: params.id },
+      relations: ['apartment'],
+    })
+
+    if (!bill) {
+      ctx.throw(404, 'bill not found')
+    }
+
+    billService.merge(bill, result.data as Partial<Bill>)
+    await billService.save(bill)
+
+    const apartmentUser = await apartmentService.findOne({
+      where: { id: bill.apartment.id },
+      relations: ['user'],
+    })
+
+    console.log(apartmentUser)
+
+    sendBillEmail(
+      subjects.billSubject,
+      apartmentUser?.user.email!,
+      htmlBIlls(
+        bill.amount,
+        bill.due_date,
+        bill.year,
+        bill.month,
+        bill.gas_pic,
+      ),
+    )
+    ctx.body = bill
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }

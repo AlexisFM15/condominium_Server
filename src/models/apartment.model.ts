@@ -33,6 +33,9 @@ export class Apartment {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   rent!: number
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  lastGasMetric!: number
+
   //timestamps
 
   @CreateDateColumn()
@@ -45,6 +48,7 @@ export class Apartment {
   fecha_eliminado!: Date
 
   //relations
+
   @OneToMany(() => Bill, (bill) => bill.apartment)
   bill!: Bill[]
 

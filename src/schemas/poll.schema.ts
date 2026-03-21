@@ -3,12 +3,14 @@ import { z } from 'zod'
 export const createPollSchema = z.object({
   description: z.string().min(1),
   expires_at: z.coerce.date(),
+  poll_result: z.number(),
   userId: z.uuid(),
 })
 
 export const updatePollSchema = z.object({
   description: z.string().min(1).optional(),
   expires_at: z.coerce.date().optional(),
+  poll_result: z.number(),
   userId: z.uuid().optional(),
 })
 
