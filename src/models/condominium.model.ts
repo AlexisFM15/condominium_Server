@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from 'typeorm'
 import { Building } from './building.model.js'
+import { Area } from './area.model.js'
 
 @Entity()
 export class Condominium {
@@ -19,6 +20,15 @@ export class Condominium {
 
   @Column({ type: 'text' })
   description!: string
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  latefee_amount!: number
+
+  @Column({ type: 'int', default: 0 })
+  time_limit_days!: number
+
+  @Column({ type: 'int', default: 1 })
+  invoicesDate!: number
 
   //timestamps
   @CreateDateColumn()
@@ -34,4 +44,7 @@ export class Condominium {
 
   @OneToMany(() => Building, (building) => building.condominium)
   building!: Building[]
+
+  @OneToMany(() => Area, (area) => area.condominium)
+  area!: Area[]
 }

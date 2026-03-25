@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/index.ts",
-    "worker": "tsx watch src/workers/billGenerator.worker.ts"
+    "billGenWorker": "tsx watch src/workers/billingGenerator.worker.ts",
+    "billDueWorker": "tsx watch src/workers/billingDue.worker.ts"
   },
   "keywords": [],
   "author": "",

@@ -14,31 +14,33 @@ export const billsMonthlyGenereation = async () => {
     const lastBillMonth = await billService.findLast()
 
     const job = CronJob.from({
-      cronTime: '0 0 * * *', // -> every night
+      cronTime: '0 0 * * *',
+      // '0 0 * * *', // -> every night at midnight
       onTick: async () => {
-        console.log('que pase')
         if (
           lastBillMonth?.month !==
           today.toLocaleString('es-DO', { month: 'long' })
         ) {
-          const apartment = await apartmentService.find({
-            relations: ['building', 'user'],
-          })
+          const apartment = await apartmentService.findForBills()
           // create a bill to every apartment existent
-          apartment.forEach((apa) => {
-            const bill = billService.create({
+          for (const apa of apartment) {
+            const dueDate = new Date(today)
+            today.setDate(
+              today.getDate() + apa.building.condominium.time_limit_days,
+            )
+
+            const bill = await billService.create({
               amount: apa.rent,
-              status: BillStatus.PENDING,
-              due_date: '2026-03-01',
+              status: BillStatus.DRAFT,
+              due_date: dueDate.toLocaleDateString('en-Do'),
               year: `${today.getFullYear()}`,
               month: `${today.toLocaleString('es-DO', { month: 'long' })}`,
               gas_pic: '',
               apartment: { id: apa.id },
             })
-            billService.save(bill)
-          })
+            await billService.save(bill)
+          }
         }
-        return
       },
       start: true,
       timeZone: 'America/Santo_Domingo',

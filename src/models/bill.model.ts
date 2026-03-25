@@ -33,6 +33,12 @@ export class Bill {
   @Column({ type: 'varchar' })
   gas_pic!: string
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  latefee!: number
+
+  @Column({ type: 'boolean', default: false })
+  lateFeeStatus!: boolean
+
   //timestamps
 
   @CreateDateColumn()

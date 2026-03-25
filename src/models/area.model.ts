@@ -7,8 +7,10 @@ import {
   DeleteDateColumn,
   Index,
   OneToMany,
+  ManyToOne,
 } from 'typeorm'
 import { Schedule_area } from './schedule_area.model.js'
+import { Condominium } from './condominium.model.js'
 
 @Entity()
 export class Area {
@@ -37,4 +39,7 @@ export class Area {
 
   @OneToMany(() => Schedule_area, (schedule_area) => schedule_area.area)
   schedule_area!: Schedule_area[]
+
+  @ManyToOne(() => Condominium, (condominium) => condominium.building)
+  condominium!: Condominium
 }

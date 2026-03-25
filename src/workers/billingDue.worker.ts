@@ -1,0 +1,47 @@
+import { CronJob } from 'cron'
+import database from '../config/database.js'
+import { billService } from '../services/bill.service.js'
+import { BillStatus } from '../utils/enums.js'
+
+const billingDue = async () => {
+  await database.initializeDB()
+  const today = new Date()
+
+  try {
+    const job = CronJob.from({
+      cronTime: '0 0 * * *', // every night at midnight
+      onTick: async () => {
+        // search at least one overdue bill for validation
+        const billDateValidation = await billService.findOneByPendingStatus()
+        try {
+          // skip process if dont found any overdue bill
+          if (!billDateValidation) {
+            return
+          }
+          const notPaidBills = await billService.findByPendingStatus()
+
+          for (const bill of notPaidBills) {
+            //skip if the bill has a latefee already applied or the due time is not done
+            if (bill.lateFeeStatus === true || bill.due_date < today) {
+              continue
+            }
+            bill.latefee =
+              bill.amount * bill.apartment.building.condominium.latefee_amount
+
+            bill.status = BillStatus.OVERDUE
+            await billService.save(bill)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      },
+      start: true,
+      timeZone: 'America/Santo_Domingo',
+    })
+    return job
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+billingDue()

@@ -1,12 +1,14 @@
 export enum Rol {
   ADMIN = 'Administrador',
-  CONDOMINIUM = 'condomino',
+  CONDOMINIUM = 'Condomino',
+  OPERATOR = 'Operador',
 }
 
 export enum BillStatus {
   PAID = 'Pagado',
   PENDING = 'Pendiente',
   OVERDUE = 'Vencida',
+  DRAFT = 'Borrador',
 }
 
 export enum occupancyType {
