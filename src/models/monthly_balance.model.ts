@@ -21,10 +21,10 @@ export class Montlhy_balance {
   expense!: number
 
   @Column({ type: 'varchar' })
-  year!: Date
+  year!: string
 
   @Column({ type: 'varchar' })
-  month!: Date
+  month!: string
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total!: number

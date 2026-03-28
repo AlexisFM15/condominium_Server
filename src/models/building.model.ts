@@ -22,6 +22,9 @@ export class Building {
   @Column({ type: 'text', nullable: true })
   description!: string
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  serviceCost!: number
+
   //timestamps
   @CreateDateColumn()
   fecha_registro!: Date

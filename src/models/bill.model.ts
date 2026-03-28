@@ -30,6 +30,12 @@ export class Bill {
   @Column({ nullable: false, type: 'varchar' })
   month!: string
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  gas_metric!: number
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  gas_total!: number
+
   @Column({ type: 'varchar' })
   gas_pic!: string
 

@@ -12,7 +12,8 @@ const billingDue = async () => {
       cronTime: '0 0 * * *', // every night at midnight
       onTick: async () => {
         // search at least one overdue bill for validation
-        const billDateValidation = await billService.findOneByPendingStatus()
+        const billDateValidation =
+          await billService.findOneByPendingStatusValidation()
         try {
           // skip process if dont found any overdue bill
           if (!billDateValidation) {
@@ -29,6 +30,7 @@ const billingDue = async () => {
               bill.amount * bill.apartment.building.condominium.latefee_amount
 
             bill.status = BillStatus.OVERDUE
+            bill.lateFeeStatus = true
             await billService.save(bill)
           }
         } catch (error) {

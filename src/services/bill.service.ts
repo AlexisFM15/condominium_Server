@@ -21,10 +21,15 @@ export const billService = database.appDataSource.getRepository(Bill).extend({
       .leftJoinAndSelect('Building.condominium', 'Condominium')
       .getMany()
   },
-  findOneByPendingStatus() {
+  findOneByPendingStatus(id: number) {
+    return this.createQueryBuilder('Bill')
+      .where('Bill.status = :status', { status: BillStatus.PENDING })
+      .andWhere('Bill.id = :id', { id: id })
+      .getOne()
+  },
+  findOneByPendingStatusValidation() {
     return this.createQueryBuilder('Bill')
       .where('Bill.status = :status', { status: BillStatus.PENDING })
       .getOne()
   },
-  expireBills() {},
 })

@@ -3,13 +3,16 @@ import {
   createBillSchema,
   updateBillSchema,
   billParamsSchema,
+  sendBillSchema,
 } from '../schemas/bill.schema.js'
 import { billService } from '../services/bill.service.js'
 import { Bill } from '../models/bill.model.js'
-import { BillStatus } from '../utils/enums.js'
+import { BillStatus, MovemntType } from '../utils/enums.js'
 import { sendBillEmail } from '../helpers/mailing.js'
 import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
 import { apartmentService } from '../services/apartment.service.js'
+import { monthly_balanceService } from '../services/monthly_balance.service.js'
+import { movementService } from '../services/movement.service.js'
 
 // CREATE
 export const createBill = async (ctx: Context) => {
@@ -126,13 +129,12 @@ export const deleteBill = async (ctx: Context) => {
   }
 }
 
-// update bill draft
+// complete bill draft
 export const sendBill = async (ctx: Context) => {
   const params = billParamsSchema.parse(ctx.params)
-  console.log(params)
 
   try {
-    const result = updateBillSchema.safeParse(ctx.request.body)
+    const result = sendBillSchema.safeParse(ctx.request.body)
 
     if (!result.success) {
       ctx.throw(400, result.error)
@@ -146,16 +148,28 @@ export const sendBill = async (ctx: Context) => {
     if (!bill) {
       ctx.throw(404, 'bill not found')
     }
+    const today = new Date()
 
     billService.merge(bill, result.data as Partial<Bill>)
-    await billService.save(bill)
 
-    const apartmentUser = await apartmentService.findOne({
-      where: { id: bill.apartment.id },
-      relations: ['user'],
-    })
+    const apartmentUser = await apartmentService.findForSendBill(bill.id)
 
-    console.log(apartmentUser)
+    const dueDate = new Date(today)
+    today.setDate(
+      today.getDate() + apartmentUser?.building.condominium.time_limit_days!,
+    )
+
+    const newGasMetric = {
+      lastGasMetric: result.data.gasMetric,
+    }
+    const newbill = {
+      gas_metric: result.data.gasMetric,
+      due_date: dueDate,
+      gas_pic: result.data.gas_pic!,
+    }
+
+    await billService.save(newbill)
+    await apartmentService.save(newGasMetric)
 
     sendBillEmail(
       subjects.billSubject,
@@ -169,6 +183,41 @@ export const sendBill = async (ctx: Context) => {
       ),
     )
     ctx.body = bill
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
+  }
+}
+
+//
+export const payBill = async (ctx: Context) => {
+  const result = billParamsSchema.parse(ctx.params)
+
+  try {
+    const bill = await billService.findOneByPendingStatus(result.id)
+
+    if (!bill) {
+      ctx.throw(404, 'not Found')
+    }
+    bill!.status = BillStatus.PAID
+    await billService.save(bill)
+
+    const monthlyBalance = await monthly_balanceService.findOne({
+      where: { month: bill.month },
+    })
+    if (!monthlyBalance) {
+      ctx.throw(404, 'not Found')
+    }
+
+    const newMovement = await movementService.create({
+      amount: bill.amount + bill.gas_total,
+      name: MovemntType.INCOME,
+      description: `Pago de factura No.${bill.id} del apartamento No. ${bill.apartment.number}`,
+      date: '0000-00-00',
+      monthly_balance: { id: monthlyBalance.id },
+    })
+    await movementService.save(newMovement)
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }

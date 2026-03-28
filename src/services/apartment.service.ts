@@ -12,6 +12,18 @@ export const apartmentService = database.appDataSource
         })
         .leftJoinAndSelect('Apartment.building', 'Building')
         .leftJoinAndSelect('Building.condominium', 'Condominium')
+        .leftJoinAndSelect('Apartment.user', 'User')
         .getMany()
+    },
+    findForSendBill(id: number) {
+      return this.createQueryBuilder('Apartment')
+        .where('Apartment.id = :id', {
+          id: id,
+        })
+        .leftJoinAndSelect('Apartment.building', 'Building')
+        .leftJoinAndSelect('Apartment.user', 'User')
+
+        .leftJoinAndSelect('Building.condominium', 'Condominium')
+        .getOne()
     },
   })
