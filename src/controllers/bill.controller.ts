@@ -190,7 +190,7 @@ export const sendBill = async (ctx: Context) => {
   }
 }
 
-//
+//pay bills
 export const payBill = async (ctx: Context) => {
   const result = billParamsSchema.parse(ctx.params)
 

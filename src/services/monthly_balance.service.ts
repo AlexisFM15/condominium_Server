@@ -9,4 +9,9 @@ export const monthly_balanceService = database.appDataSource
         .orderBy('fecha_registro', 'DESC')
         .getOne()
     },
+    findByMonth(month: string) {
+      return this.createQueryBuilder('mb')
+        .where('mb.month = :month', { month: month })
+        .getOne()
+    },
   })

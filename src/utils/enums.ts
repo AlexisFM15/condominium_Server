@@ -23,6 +23,13 @@ export enum Payment_Method {
   CHECK = 'Cheque',
 }
 
+export enum Payment_type {
+  BILL = 'Factura',
+  MAINTENANCE = 'Mantenimiento',
+  Servicios = 'Servicio',
+  OTROS = 'Otros',
+}
+
 export enum StatusSchedule {
   CANCEL = 'Cancelada',
   PENDING = 'Pendiente',
