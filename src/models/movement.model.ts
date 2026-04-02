@@ -16,7 +16,7 @@ export class Movement {
   id!: number
 
   @Column({ type: 'enum', enum: MovemntType, nullable: false })
-  name!: MovemntType
+  type!: MovemntType
 
   @Column({ type: 'text' })
   description!: string // take from service and payment tables to complete this

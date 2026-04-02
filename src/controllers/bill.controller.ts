@@ -13,6 +13,7 @@ import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
 import { apartmentService } from '../services/apartment.service.js'
 import { monthly_balanceService } from '../services/monthly_balance.service.js'
 import { movementService } from '../services/movement.service.js'
+import { createPaymentT } from '../services/payment.service.js'
 
 // CREATE
 export const createBill = async (ctx: Context) => {
@@ -192,10 +193,11 @@ export const sendBill = async (ctx: Context) => {
 
 //pay bills
 export const payBill = async (ctx: Context) => {
-  const result = billParamsSchema.parse(ctx.params)
+  const resultParams = billParamsSchema.parse(ctx.params)
+  // const result =
 
   try {
-    const bill = await billService.findOneByPendingStatus(result.id)
+    const bill = await billService.findOneByPendingStatus(resultParams.id)
 
     if (!bill) {
       ctx.throw(404, 'not Found')
@@ -210,14 +212,16 @@ export const payBill = async (ctx: Context) => {
       ctx.throw(404, 'not Found')
     }
 
-    const newMovement = await movementService.create({
+    const newPayment = {
       amount: bill.amount + bill.gas_total,
-      name: MovemntType.INCOME,
+      payment_date: bill.fecha_registro,
       description: `Pago de factura No.${bill.id} del apartamento No. ${bill.apartment.number}`,
-      date: '0000-00-00',
-      monthly_balance: { id: monthlyBalance.id },
-    })
-    await movementService.save(newMovement)
+      reference: '',
+      paymentType: MovemntType.INCOME,
+      payment_method: '',
+    }
+
+    const payment = await createPaymentT(newPayment, MovemntType.INCOME)
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }

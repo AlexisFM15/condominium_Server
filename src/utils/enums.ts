@@ -26,7 +26,7 @@ export enum Payment_Method {
 export enum Payment_type {
   BILL = 'Factura',
   MAINTENANCE = 'Mantenimiento',
-  Servicios = 'Servicio',
+  SERVICES = 'Servicio',
   OTROS = 'Otros',
 }
 

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BillStatus } from '../utils/enums.js'
+import { BillStatus, MovemntType } from '../utils/enums.js'
 
 export const createBillSchema = z.object({
   amount: z.number().positive(),
@@ -31,6 +31,10 @@ export const sendBillSchema = z.object({
   status: z.enum(BillStatus).optional(),
   gas_pic: z.string().min(1).optional(),
   gasMetric: z.number().positive(),
+})
+
+export const payBills = z.object({
+  type_movement: z.enum(MovemntType),
 })
 
 export const billParamsSchema = z.object({

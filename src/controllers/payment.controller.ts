@@ -3,45 +3,23 @@ import {
   createPaymentSchema,
   updatePaymentSchema,
   paymentParamsSchema,
+  createExtraPaymentSchema,
 } from '../schemas/payment.schema.js'
 import { paymentService } from '../services/payment.service.js'
+import { createPaymentT } from '../services/payment.service.js'
 import { Payment } from '../models/payment.model.js'
-import { movementService } from '../services/movement.service.js'
 import { MovemntType } from '../utils/enums.js'
-import { monthly_balanceService } from '../services/monthly_balance.service.js'
 
 // CREATE
 export const createPayment = async (ctx: Context) => {
   const result = createPaymentSchema.safeParse(ctx.request.body)
-  const today = new Date().toLocaleDateString('es-DO', { month: 'long' })
-  const todayMove = new Date().toISOString()
 
   try {
     if (!result.success) {
       ctx.throw(400, result.error)
     }
 
-    const payment = paymentService.create(result.data)
-    console.log(payment)
-    await paymentService.save(payment)
-
-    const monthlyBalance = await monthly_balanceService.findByMonth(`${today}`)
-
-    console.log(today)
-    console.log(monthlyBalance)
-    if (!monthlyBalance) {
-      ctx.throw(404, 'not Found1213')
-    }
-
-    const newMovement = await movementService.create({
-      amount: result.data.amount,
-      name: MovemntType.EXPENSES,
-      description: `Se hizo un pago por ${payment.paymentType}, No ${payment.id}`,
-      date: todayMove,
-      monthly_balance: { id: monthlyBalance.id },
-    })
-    await movementService.save(newMovement)
-
+    const payment = await createPaymentT(result.data, MovemntType.EXPENSES)
     ctx.status = 201
     ctx.body = payment
   } catch (error) {
@@ -134,5 +112,34 @@ export const deletePayment = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+  }
+}
+
+// payments out of rulers
+export const createExtraPayment = async (ctx: Context) => {
+  const result = createExtraPaymentSchema.safeParse(ctx.request.body)
+
+  try {
+    if (!result.success) {
+      ctx.throw(400, result.error)
+    }
+
+    const payment = await createPaymentT(
+      {
+        description: result.data.description,
+        amount: result.data.amount,
+        reference: result.data.reference,
+        payment_method: result.data.payment_method,
+        payment_date: result.data.payment_date,
+        paymentType: result.data.paymentType,
+      },
+      result.data.movementType,
+    )
+    ctx.status = 201
+    ctx.body = payment
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }

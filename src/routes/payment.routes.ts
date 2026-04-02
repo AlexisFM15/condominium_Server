@@ -5,6 +5,7 @@ import {
   getPaymentById,
   updatePayment,
   deletePayment,
+  createExtraPayment,
 } from '../controllers/payment.controller.js'
 
 const router = new Router({
@@ -12,6 +13,7 @@ const router = new Router({
 })
 
 router.post('/', createPayment)
+router.post('/extra', createExtraPayment)
 router.get('/', getPayments)
 router.get('/:id', getPaymentById)
 router.put('/:id', updatePayment)
