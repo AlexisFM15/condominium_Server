@@ -34,7 +34,6 @@ export enum StatusSchedule {
   CANCEL = 'Cancelada',
   PENDING = 'Pendiente',
   DONE = 'Completada', // reservation dealt
-  FINISHED = 'Terminada',
 }
 
 export enum MovemntType {

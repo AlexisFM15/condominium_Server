@@ -6,15 +6,18 @@ import {
   updateMonthly_balance,
   deleteMonthly_balance,
 } from '../controllers/monthly_balance.controller.js'
+import { Operador } from '../middlewares/OperatorMiddleware.js'
+import { auth } from '../middlewares/auth.middleware.js'
+import { admin } from '../middlewares/admin.middleware.js'
 
 const router = new Router({
   prefix: '/monthlybalances',
 })
 
-router.post('/', createMonthly_balance)
-router.get('/', getMonthly_balances)
-router.get('/:id', getMonthly_balanceById)
-router.put('/:id', updateMonthly_balance)
-router.delete('/:id', deleteMonthly_balance)
+router.post('/', auth, admin, createMonthly_balance)
+router.get('/', auth, Operador, getMonthly_balances)
+router.get('/:id', auth, Operador, getMonthly_balanceById)
+router.put('/:id', auth, admin, updateMonthly_balance)
+router.delete('/:id', auth, admin, deleteMonthly_balance)
 
 export default router

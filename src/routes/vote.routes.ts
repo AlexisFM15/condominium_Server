@@ -6,15 +6,17 @@ import {
   updateVote,
   deleteVote,
 } from '../controllers/vote.controller.js'
+import { Operador } from '../middlewares/OperatorMiddleware.js'
+import { auth } from '../middlewares/auth.middleware.js'
 
 const router = new Router({
   prefix: '/votes',
 })
 
-router.post('/', createVote)
-router.get('/', getVotes)
-router.get('/:id', getVoteById)
-router.put('/:id', updateVote)
-router.delete('/:id', deleteVote)
+router.post('/', auth, createVote)
+router.get('/', auth, Operador, getVotes)
+router.get('/:id', auth, getVoteById)
+router.put('/:id', auth, Operador, updateVote)
+router.delete('/:id', auth, Operador, deleteVote)
 
 export default router

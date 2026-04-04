@@ -6,15 +6,17 @@ import {
   updateArea,
   deleteArea,
 } from '../controllers/area.controller.js'
+import { auth } from '../middlewares/auth.middleware.js'
+import { Operador } from '../middlewares/OperatorMiddleware.js'
 
 const router = new Router({
   prefix: '/areas',
 })
 
-router.post('/', createArea)
-router.get('/', getAreas)
-router.get('/:id', getAreaById)
-router.put('/:id', updateArea)
-router.delete('/:id', deleteArea)
+router.post('/', auth, Operador, createArea)
+router.get('/', auth, Operador, getAreas)
+router.get('/:id', auth, getAreaById)
+router.put('/:id', auth, Operador, updateArea)
+router.delete('/:id', auth, Operador, deleteArea)
 
 export default router

@@ -6,15 +6,17 @@ import {
   updateApartment,
   deleteApartment,
 } from '../controllers/apartment.controller.js'
+import { auth } from '../middlewares/auth.middleware.js'
+import { Operador } from '../middlewares/OperatorMiddleware.js'
 
 const router = new Router({
   prefix: '/apartments',
 })
 
-router.post('/', createApartment)
-router.get('/', getApartments)
-router.get('/:id', getApartmentById)
-router.put('/:id', updateApartment)
-router.delete('/:id', deleteApartment)
+router.post('/', auth, createApartment)
+router.get('/', auth, Operador, getApartments)
+router.get('/:id', auth, getApartmentById)
+router.put('/:id', auth, updateApartment)
+router.delete('/:id', auth, deleteApartment)
 
 export default router
