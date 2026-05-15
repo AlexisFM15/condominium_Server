@@ -40,3 +40,8 @@ export enum MovemntType {
   EXPENSES = 'Gasto',
   INCOME = 'Ingreso',
 }
+
+export enum PollStatus {
+  OPEN = 'Abierta',
+  CLOSE = 'CERRADA',
+}

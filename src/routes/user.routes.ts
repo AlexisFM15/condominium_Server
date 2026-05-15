@@ -14,9 +14,9 @@ const router = new Router({
 })
 
 router.post('/', auth, admin, createUser)
-router.get('/', auth, admin, getUsers)
+router.get('/', auth, getUsers)
 router.get('/:id', auth, admin, getUserById)
-router.put('/:id', auth, admin, updateUser)
+router.patch('/:id', auth, admin, updateUser)
 router.delete('/:id', auth, admin, deleteUser)
 
 export default router

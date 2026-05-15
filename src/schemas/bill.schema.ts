@@ -35,6 +35,7 @@ export const sendBillSchema = z.object({
 
 export const payBills = z.object({
   type_movement: z.enum(MovemntType),
+  
 })
 
 export const billParamsSchema = z.object({

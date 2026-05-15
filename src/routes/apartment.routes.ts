@@ -14,7 +14,7 @@ const router = new Router({
 })
 
 router.post('/', auth, createApartment)
-router.get('/', auth, Operador, getApartments)
+router.get('/', getApartments)
 router.get('/:id', auth, getApartmentById)
 router.put('/:id', auth, updateApartment)
 router.delete('/:id', auth, deleteApartment)

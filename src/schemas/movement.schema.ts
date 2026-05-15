@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { MovemntType } from '../utils/enums.js'
 
 export const createMovementSchema = z.object({
-  name: z.enum(MovemntType),
+  type: z.enum(MovemntType),
   description: z.string().min(1),
   amount: z.number(),
   date: z.coerce.date(),
@@ -10,7 +10,7 @@ export const createMovementSchema = z.object({
 })
 
 export const updateMovementSchema = z.object({
-  name: z.enum(MovemntType).optional(),
+  type: z.enum(MovemntType).optional(),
   description: z.string().min(1).optional(),
   amount: z.number().optional(),
   date: z.coerce.date().optional(),

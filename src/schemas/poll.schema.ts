@@ -1,9 +1,11 @@
 import { z } from 'zod'
+import { PollStatus } from '../utils/enums.js'
 
 export const createPollSchema = z.object({
   description: z.string().min(1),
   expires_at: z.coerce.date(),
   poll_result: z.number(),
+  status: z.enum(PollStatus).optional(),
   userId: z.uuid(),
 })
 

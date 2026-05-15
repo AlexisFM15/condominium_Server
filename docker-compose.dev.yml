@@ -19,7 +19,20 @@ services:
       - postgres
       # - redis
     
+  worker:
+    build: .
+    container_name: worker
+    command: pnpm billGenWorker
+    depends_on:
+      - postgres
 
+  worker2:
+    build: .
+    container_name: worker2
+    command: pnpm billDueWorker
+    depends_on:
+      - postgres
+      
   postgres:
     image: postgres:16
     container_name: condominio_postgres_dev

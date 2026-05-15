@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { MovemntType, Payment_Method, Payment_type } from '../utils/enums.js'
-import { Movement } from '../models/movement.model.js'
 
 export const createPaymentSchema = z.object({
   description: z.string().min(1),

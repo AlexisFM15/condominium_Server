@@ -12,7 +12,6 @@ import { sendBillEmail } from '../helpers/mailing.js'
 import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
 import { apartmentService } from '../services/apartment.service.js'
 import { monthly_balanceService } from '../services/monthly_balance.service.js'
-import { movementService } from '../services/movement.service.js'
 import { createPaymentT } from '../services/payment.service.js'
 
 // CREATE
@@ -195,7 +194,7 @@ export const sendBill = async (ctx: Context) => {
 export const payBill = async (ctx: Context) => {
   const resultParams = billParamsSchema.parse(ctx.params)
   // const result =
-
+  const { reference, payment_method } = ctx.request.body
   try {
     const bill = await billService.findOneByPendingStatus(resultParams.id)
 
@@ -216,9 +215,9 @@ export const payBill = async (ctx: Context) => {
       amount: bill.amount + bill.gas_total,
       payment_date: bill.fecha_registro,
       description: `Pago de factura No.${bill.id} del apartamento No. ${bill.apartment.number}`,
-      reference: '',
+      reference,
       paymentType: MovemntType.INCOME,
-      payment_method: '',
+      payment_method,
     }
 
     const payment = await createPaymentT(newPayment, MovemntType.INCOME)

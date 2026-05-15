@@ -4,13 +4,15 @@ import { billService } from '../services/bill.service.js'
 import { BillStatus } from '../utils/enums.js'
 
 const billingDue = async () => {
-  await database.initializeDB()
-  const today = new Date()
+  if (!database.appDataSource.isInitialized) {
+    await database.initializeDB()
+  }
 
   try {
     const job = CronJob.from({
       cronTime: '0 0 * * *', // every night at midnight
       onTick: async () => {
+        const today = new Date()
         // search at least one overdue bill for validation
         const billDateValidation =
           await billService.findOneByPendingStatusValidation()

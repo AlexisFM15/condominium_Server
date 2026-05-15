@@ -7,6 +7,7 @@ const refreshToken = async (ctx: Context) => {
   //take refresh token from cookies
   const refreshToken = ctx.cookies.get('refreshToken')
 
+  console.log('intento refresh', console.log(refreshToken))
   //validation token
   if (!refreshToken) {
     ctx.status = 401
@@ -33,7 +34,7 @@ const refreshToken = async (ctx: Context) => {
     const acToken = accessToken(session.user.id!)
     console.log(acToken)
 
-    ctx.body = { acToken }
+    ctx.body = { accessToken: acToken }
   } catch (error) {
     ctx.status = 401
     console.log(error)

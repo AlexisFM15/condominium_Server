@@ -1,6 +1,5 @@
-import database from "../config/database.js"
-import { User } from "../models/user.model.js"
-
+import database from '../config/database.js'
+import { User } from '../models/user.model.js'
 
 export const userService = database.appDataSource.getRepository(User).extend({
   findByEmail(email: string) {
@@ -13,4 +12,5 @@ export const userService = database.appDataSource.getRepository(User).extend({
       .where('User.id = :id', { id })
       .getRawOne()
   },
+  getDashboard() {},
 })

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 export const auth = async (ctx: Context, next: Next) => {
   const authHeader = ctx.headers.authorization
 
+  console.log(authHeader)
   if (!authHeader) {
     ctx.status = 401
     console.log('no existe')

@@ -10,6 +10,7 @@ import {
 } from 'typeorm'
 import { User } from './user.model.js'
 import { Vote } from './vote.model.js'
+import { PollStatus } from '../utils/enums.js'
 
 @Entity()
 export class Poll {
@@ -24,6 +25,9 @@ export class Poll {
 
   @Column({ type: 'date' })
   expires_at!: Date
+
+  @Column({ type: 'enum', enum: PollStatus, default: PollStatus.CLOSE })
+  status!: string
 
   //timestamps
 

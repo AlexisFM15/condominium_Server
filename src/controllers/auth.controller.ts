@@ -40,12 +40,13 @@ export const login = async (ctx: Context) => {
 
     ctx.cookies.set('refreshToken', rhToken)
     ctx.status = 200
-    ctx.body = { message: 'Access succeed', acToken }
+    ctx.body = { message: 'Access succeed', token: acToken }
     return
   } catch (error) {
     if (error instanceof UserNotFound) {
       ctx.status = error.statusCode
       ctx.body = { message: error.message }
+      console.log(error)
       return
     }
 
@@ -69,4 +70,28 @@ export const logout = async (ctx: Context) => {
 
   ctx.cookies.set('refreshToken', '', { maxAge: 0 })
   ctx.body = { message: 'Logged out' }
+}
+
+export const getMe = async (ctx: Context) => {
+  try {
+    const userId = ctx.state.user.id
+
+    const user = await userService.findOneBy(userId)
+
+    if (!user) {
+      ctx.status = 404
+      ctx.body = { message: 'User not found' }
+      return
+    }
+
+    ctx.status = 200
+    ctx.body = {
+      user,
+    }
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = {
+      message: 'Error connecting to server',
+    }
+  }
 }

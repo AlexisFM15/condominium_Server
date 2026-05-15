@@ -33,6 +33,7 @@ export const createUser = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 
@@ -57,7 +58,6 @@ export const getUserById = async (ctx: Context) => {
   try {
     const user = await userService.findOne({
       where: { id: params.id },
-      relations: ['building'],
     })
 
     if (!user) {
@@ -68,6 +68,7 @@ export const getUserById = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 
@@ -119,5 +120,6 @@ export const deleteUser = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
