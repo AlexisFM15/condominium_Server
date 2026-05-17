@@ -14,17 +14,12 @@ import { userService } from '../services/user.service.js'
 // CREATE
 export const createsShedule_area = async (ctx: Context) => {
   const result = createScheduleAreaSchema.safeParse(ctx.request.body)
-  const today = new Date()
 
   try {
     if (!result.success) {
       ctx.throw(400, result.error)
     }
 
-    const resultDate = new Date(result.data.reservation_date)
-    if (resultDate < today) {
-      ctx.throw(401, 'Fecha no valida')
-    }
     const prev = await schedule_areaService.findByDateAndArea(
       result.data.areaId,
       result.data.reservation_date,

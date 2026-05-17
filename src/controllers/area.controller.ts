@@ -30,12 +30,11 @@ export const createArea = async (ctx: Context) => {
 // GET ALL
 export const getAreas = async (ctx: Context) => {
   try {
-    const areas = await areaService.find({
-      relations: [''],
-    })
+    const areas = await areaService.find()
 
     ctx.body = areas
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

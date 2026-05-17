@@ -30,12 +30,11 @@ export const createMonthly_balance = async (ctx: Context) => {
 // GET ALL
 export const getMonthly_balances = async (ctx: Context) => {
   try {
-    const monthly_balances = await monthly_balanceService.find({
-      relations: [''],
-    })
+    const monthly_balances = await monthly_balanceService.find()
 
     ctx.body = monthly_balances
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

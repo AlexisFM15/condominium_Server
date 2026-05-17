@@ -63,13 +63,15 @@ export const login = async (ctx: Context) => {
 
 export const logout = async (ctx: Context) => {
   const refreshToken = ctx.cookies.get('refreshToken')
-
-  if (refreshToken) {
-    await sessionService.delete({ token: refreshToken })
+  try {
+    if (refreshToken) {
+      const out = await sessionService.delete({ token: refreshToken })
+    }
+    ctx.cookies.set('refreshToken', '', { maxAge: 0 })
+    ctx.body = { message: 'Logged out' }
+  } catch (error) {
+    console.log(error)
   }
-
-  ctx.cookies.set('refreshToken', '', { maxAge: 0 })
-  ctx.body = { message: 'Logged out' }
 }
 
 export const getMe = async (ctx: Context) => {

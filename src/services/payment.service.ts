@@ -31,7 +31,7 @@ export async function createPaymentT(data: any, type: MovemntType) {
       payment_method,
     })
 
-    await manager.save(payment)
+    const pay = await manager.save(payment)
 
     // 2. Buscar balance
     let balance = await manager
@@ -57,7 +57,7 @@ export async function createPaymentT(data: any, type: MovemntType) {
     const movement = manager.create(Movement, {
       amount,
       type,
-      description,
+      description: `${description + ' ' + pay.id}`,
       date,
       monthly_balance: balance,
     })
