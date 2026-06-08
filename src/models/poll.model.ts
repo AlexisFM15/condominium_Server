@@ -17,11 +17,11 @@ export class Poll {
   @PrimaryGeneratedColumn('identity')
   id!: number
 
+  @Column({ type: 'varchar' })
+  title!: string
+  
   @Column({ type: 'text' })
   description!: string
-
-  @Column({ type: 'int', nullable: true })
-  poll_result!: number
 
   @Column({ type: 'date' })
   expires_at!: Date
@@ -51,6 +51,6 @@ votesAgainst!: number
   @ManyToOne(() => User, (user) => user.poll)
   user!: User
 
-  @OneToMany(() => Vote, (vote) => vote.user)
+  @OneToMany(() => Vote, (vote) => vote.poll)
   vote!: Vote[]
 }

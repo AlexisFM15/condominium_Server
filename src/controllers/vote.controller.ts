@@ -6,23 +6,65 @@ import {
 } from '../schemas/vote.schema.js'
 import { voteService } from '../services/vote.service.js'
 import { Vote } from '../models/vote.model.js'
+import { VoteType } from '../utils/enums.js'
+import { pollService } from '../services/poll.service.js'
+import { userService } from '../services/user.service.js'
 
 // CREATE
 export const createVote = async (ctx: Context) => {
   const result = createVoteSchema.safeParse(ctx.request.body)
-
+  console.log(result)
+  const userId = ctx.state.user.userId
   try {
-    if (!result.success) {
-      ctx.throw(400, result.error)
-    }
+ const user = await userService.findOne({
+  where: {
+    id: userId,
+  },
+})
 
-    const vote = voteService.create({ ...result.data })
-    await voteService.save(vote)
+if (!user) {
+  ctx.throw(404, 'User not found')
+}
+
+const poll = await pollService.findOne({
+  where: {
+    id: result.data!.pollId,
+  },
+})
+
+if (!poll) {
+  ctx.throw(404, 'Poll not found')
+}
+
+console.log({
+  vote: result.data?.vote,
+  user,
+  poll,
+})
+
+const vote = voteService.create({
+  vote: result.data!.vote,
+  user,
+  poll
+})
+
+await voteService.save(vote)
+if (!poll) {
+  ctx.throw(404, 'Poll not found')
+}
+    if (vote.vote === VoteType.FAVOR) {
+      poll.votesFor++
+} else {
+  poll.votesAgainst++
+}
+
+await pollService.save(poll)
 
     ctx.status = 201
     ctx.body = vote
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }

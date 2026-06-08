@@ -7,6 +7,7 @@ import {
 import { pollService } from '../services/poll.service.js'
 import { Poll } from '../models/poll.model.js'
 import { PollStatus } from '../utils/enums.js'
+import { title } from 'node:process'
 
 // CREATE
 export const createPoll = async (ctx: Context) => {
@@ -24,6 +25,7 @@ export const createPoll = async (ctx: Context) => {
     ctx.body = poll
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
@@ -117,18 +119,31 @@ export const deletePoll = async (ctx: Context) => {
 
 export const getPollByActiveStatus = async (ctx: Context) => {
   try {
-    const poll = await pollService.find({
-      where: { status: PollStatus.OPEN }
-    })
+    const userId = ctx.state.user.userId
 
-    if (!poll) {
-      ctx.throw(404, 'poll not found')
-    }
+    const polls = await pollService.findOpenPolls()
+    console.log(JSON.stringify(polls, null, 2))
 
-    ctx.body = poll
+    console.log(userId)
+    const result = polls.map((poll) => ({
+      id: poll.id,
+      title: poll.title,
+      description: poll.description,
+      votesFor: poll.votesFor,
+      votesAgainst: poll.votesAgainst,
+
+      userVote:
+        poll.vote.find(
+          (vote) => vote.user.id === userId,
+        )?.vote ?? null,
+    }))
+
+    
+// console.log(result)
+    ctx.body = result
   } catch (error) {
-    ctx.status = 500
     console.log(error)
-    ctx.body = { message: 'Error to conect to the server' }
+    ctx.status = 500
+    ctx.body = { message: 'Error to connect to the server' }
   }
 }

@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 export const createVoteSchema = z.object({
   vote: z.string().min(1),
-  userId: z.uuid(),
   pollId: z.coerce.number().int().positive(),
 })
 

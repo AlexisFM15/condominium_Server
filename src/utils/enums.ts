@@ -47,6 +47,6 @@ export enum PollStatus {
 }
 
 export enum VoteType {
-  FAVOR = ' A favor',
+  FAVOR = 'A favor',
   AGAINST = 'En contra',
 }

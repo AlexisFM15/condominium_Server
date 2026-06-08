@@ -13,7 +13,7 @@ const router = new Router({
   prefix: '/votes',
 })
 
-router.post('/', auth, createVote)
+router.post('/', auth , createVote)
 router.get('/', auth, Operador, getVotes)
 router.get('/:id', auth, getVoteById)
 router.put('/:id', auth, Operador, updateVote)
