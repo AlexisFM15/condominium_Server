@@ -28,12 +28,13 @@ export const getDashboard = async (userId: string) => {
 
   const reservations = await database.appDataSource
     .getRepository(Schedule_area)
-    .createQueryBuilder('Schedule_area')
-    .leftJoinAndSelect('Schedule_area.area', 'area')
-    .where('Schedule_area.user.id = :userId', {
-      userId,
+    .createQueryBuilder('sa')
+    .where('sa.userId = :userId', {
+      userId: userId,
     })
-    .orderBy('Schedule_area.reservation_date', 'DESC')
+    .leftJoinAndSelect('sa.area', 'area')
+    .leftJoinAndSelect('sa.user', 'user')
+    .orderBy('sa.reservation_date', 'DESC')
     .getMany()
 
   return {
@@ -41,6 +42,6 @@ export const getDashboard = async (userId: string) => {
     apartment: user?.apartment,
     building: user?.apartment?.building,
     bills,
-    reservations,
+    reservations
   }
 }

@@ -6,16 +6,22 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  Unique,
 } from 'typeorm'
 import { User } from './user.model.js'
 import { Poll } from './poll.model.js'
+import { VoteType } from '../utils/enums.js'
 
 @Entity()
+@Unique(['user', 'poll'])
 export class Vote {
   @PrimaryGeneratedColumn('identity')
   id!: number
 
-  @Column({ type: 'varchar' })
+  @Column({
+    type: 'enum',
+    enum: VoteType,
+  })
   vote!: string
 
   //timestamps

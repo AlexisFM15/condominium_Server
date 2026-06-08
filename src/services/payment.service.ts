@@ -1,3 +1,4 @@
+import { ILike } from 'typeorm'
 import database from '../config/database.js'
 import { Montlhy_balance } from '../models/monthly_balance.model.js'
 import { Movement } from '../models/movement.model.js'
@@ -76,4 +77,40 @@ export async function createPaymentT(data: any, type: MovemntType) {
 
     return payment
   })
+}
+
+export async function deletePaymentT(id: number) {
+  return await database.appDataSource.transaction(async(manager) => {
+     const payment = await manager.findOne(Payment, {
+    where: { id },
+  })
+
+  await manager.softRemove(id)
+
+const movement = await manager.findOne(Movement, {
+  where: {
+    description: ILike(`%${id}%`),
+  }
+  })
+
+const balance = await manager.findOne(Montlhy_balance, {
+  where: {
+    id: movement!.monthly_balance.id
+  }
+  })
+
+  if (!movement || !balance) {
+  throw new Error('Movement or balance not found')
+}
+
+   if (movement.type === MovemntType.EXPENSES) {
+      balance.expense = Number(balance.expense) - Number(movement.amount)
+    } else if (movement!.type === MovemntType.INCOME) {
+      balance.income = Number(balance.income) + Number(movement.amount)
+    }
+  
+  await manager.softRemove(movement)
+  await manager.save(balance)
+
+})
 }

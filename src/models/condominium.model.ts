@@ -21,7 +21,7 @@ export class Condominium {
   @Column({ type: 'text' })
   description!: string
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  @Column({ type: 'int', default: 0 })
   latefee_amount!: number
 
   @Column({ type: 'int', default: 0 })
@@ -29,6 +29,10 @@ export class Condominium {
 
   @Column({ type: 'int', default: 1 })
   invoicesDate!: number
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  promo!: number
+  
 
   //timestamps
   @CreateDateColumn()

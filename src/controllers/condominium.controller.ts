@@ -8,7 +8,7 @@ import { condominiumService } from '../services/condominum.service.js'
 import { Condominium } from '../models/condominium.model.js'
 
 // CREATE
-export const createCondominium = async (ctx: Context) => {
+export const createCondominium = async (ctx: Context) => {3
   const result = createCondominiumSchema.safeParse(ctx.request.body)
 
   try {
@@ -24,6 +24,7 @@ export const createCondominium = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 
@@ -85,6 +86,7 @@ export const updateCondominium = async (ctx: Context) => {
 
     ctx.body = condominium
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

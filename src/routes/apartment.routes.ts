@@ -13,7 +13,7 @@ const router = new Router({
   prefix: '/apartments',
 })
 
-router.post('/', auth, createApartment)
+router.post('/',createApartment)
 router.get('/', getApartments)
 router.get('/:id', auth, getApartmentById)
 router.put('/:id', auth, updateApartment)

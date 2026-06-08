@@ -33,6 +33,7 @@ export const createApartment = async (ctx: Context) => {
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+  console.log(error)
   }
 }
 

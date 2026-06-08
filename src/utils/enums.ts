@@ -45,3 +45,8 @@ export enum PollStatus {
   OPEN = 'Abierta',
   CLOSE = 'CERRADA',
 }
+
+export enum VoteType {
+  FAVOR = ' A favor',
+  AGAINST = 'En contra',
+}

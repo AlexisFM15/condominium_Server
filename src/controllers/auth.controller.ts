@@ -1,7 +1,6 @@
 import { Context } from 'koa'
 import { Login, User } from '../types.js'
 import { userService } from '../services/user.service.js'
-import { IncorrectPassword, UserNotFound } from '../utils/errors.js'
 import { validatePassword } from '../libs/bcrypt.js'
 import { accessToken, refreshToken } from '../libs/jwt.js'
 import { sessionService } from '../services/session.service.js'
@@ -12,7 +11,9 @@ export const login = async (ctx: Context) => {
     const user: User = await userService.findByEmail(email)
 
     if (!user) {
-      throw new UserNotFound()
+      ctx.status = 400
+      ctx.body = { message:'Credenciales incorrectas', data: []}
+      return 
     }
 
     const passwordValidation = await validatePassword(
@@ -21,7 +22,9 @@ export const login = async (ctx: Context) => {
     )
 
     if (!passwordValidation) {
-      throw new IncorrectPassword()
+      ctx.status = 400
+      ctx.body = { message:'Credenciales incorrectas', data: []}
+      return 
     }
 
     //accessToken
@@ -43,19 +46,6 @@ export const login = async (ctx: Context) => {
     ctx.body = { message: 'Access succeed', token: acToken }
     return
   } catch (error) {
-    if (error instanceof UserNotFound) {
-      ctx.status = error.statusCode
-      ctx.body = { message: error.message }
-      console.log(error)
-      return
-    }
-
-    if (error instanceof IncorrectPassword) {
-      ctx.status = error.statusCode
-      ctx.body = { message: error.message }
-      return
-    }
-
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }
@@ -63,6 +53,7 @@ export const login = async (ctx: Context) => {
 
 export const logout = async (ctx: Context) => {
   const refreshToken = ctx.cookies.get('refreshToken')
+  const userId = ctx.state.user
   try {
     if (refreshToken) {
       const out = await sessionService.delete({ token: refreshToken })
@@ -76,9 +67,11 @@ export const logout = async (ctx: Context) => {
 
 export const getMe = async (ctx: Context) => {
   try {
-    const userId = ctx.state.user.id
+    const userId = ctx.state.user.userId
 
-    const user = await userService.findOneBy(userId)
+    console.log('aqui', userId)
+    
+    const user = await userService.findOneBy({id: userId})
 
     if (!user) {
       ctx.status = 404

@@ -4,9 +4,9 @@ import { getDashboard } from '../services/dashboard.service.js'
 export const getDashboardA = async (ctx: Context) => {
   try {
     const userId = ctx.state.user.userId
-    console.log('das', userId)
     const dashboard = await getDashboard(userId)
 
+    console.log('das',userId)
     ctx.status = 200
     ctx.body = dashboard
   } catch (error) {

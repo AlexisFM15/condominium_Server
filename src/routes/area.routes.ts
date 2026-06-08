@@ -13,7 +13,7 @@ const router = new Router({
   prefix: '/areas',
 })
 
-router.post('/', auth, Operador, createArea)
+router.post('/',  createArea)
 router.get('/', auth, Operador, getAreas)
 router.get('/:id', auth, getAreaById)
 router.put('/:id', auth, Operador, updateArea)

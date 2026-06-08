@@ -6,6 +6,7 @@ import {
 } from '../schemas/poll.schema.js'
 import { pollService } from '../services/poll.service.js'
 import { Poll } from '../models/poll.model.js'
+import { PollStatus } from '../utils/enums.js'
 
 // CREATE
 export const createPoll = async (ctx: Context) => {
@@ -57,6 +58,7 @@ export const getPollById = async (ctx: Context) => {
 
     ctx.body = poll
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }
@@ -109,6 +111,24 @@ export const deletePoll = async (ctx: Context) => {
     ctx.status = 204
   } catch (error) {
     ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+  }
+}
+
+export const getPollByActiveStatus = async (ctx: Context) => {
+  try {
+    const poll = await pollService.find({
+      where: { status: PollStatus.OPEN }
+    })
+
+    if (!poll) {
+      ctx.throw(404, 'poll not found')
+    }
+
+    ctx.body = poll
+  } catch (error) {
+    ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }

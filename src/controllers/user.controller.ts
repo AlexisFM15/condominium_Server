@@ -7,6 +7,7 @@ import {
 import { userService } from '../services/user.service.js'
 import { User } from '../models/user.model.js'
 import { Rol } from '../utils/enums.js'
+import { hashPassword } from '../libs/bcrypt.js'
 
 // CREATE
 export const createUser = async (ctx: Context) => {
@@ -17,12 +18,19 @@ export const createUser = async (ctx: Context) => {
       ctx.throw(400, result.error)
     }
 
+    console.log("password original:", result.data.password)
+
+const passwordHashed = await hashPassword(result.data.password)
+
+console.log("password hashed:", passwordHashed)
+console.log("tipo:", typeof passwordHashed)
+    // const passwordHashed = await hashPassword(result.data.password)
     const user = userService.create({
       name: result.data.name,
       lastname: result.data.lastname,
       phone: result.data.phone,
       email: result.data.email,
-      password: result.data.password,
+      password: passwordHashed,
       role: result.data.role || Rol.CONDOMINIUM,
       apartment: result.data.apartmentId ? { id: result.data.apartmentId } : {},
     })
@@ -96,6 +104,7 @@ export const updateUser = async (ctx: Context) => {
 
     ctx.body = user
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

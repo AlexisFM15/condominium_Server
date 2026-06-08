@@ -125,6 +125,7 @@ export const updateSchedule_area = async (ctx: Context) => {
 
     ctx.body = schedule_area
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

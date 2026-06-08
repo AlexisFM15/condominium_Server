@@ -15,6 +15,7 @@ import { Apartment } from './apartment.model.js'
 import { Vote } from './vote.model.js'
 import { Schedule_area } from './schedule_area.model.js'
 import { Session } from './session.model.js'
+import { Incident } from './incidents.model.js'
 
 @Entity()
 export class User {
@@ -40,6 +41,12 @@ export class User {
 
   @Column({ type: 'enum', enum: Rol, default: [Rol.CONDOMINIUM] })
   role!: Rol
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default : 0 })
+  balance!: number
+
+  @Column({ type: 'boolean', default: true })
+  defaultPassword!: boolean
 
   //timestamps
 
@@ -68,4 +75,7 @@ export class User {
 
   @OneToMany(() => Session, (session) => session.user)
   session!: Session[]
+
+  // @OneToMany(() => Incident, (incident) => incident.createdBy)
+  // incidents!: Incident[]
 }

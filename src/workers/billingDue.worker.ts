@@ -25,12 +25,11 @@ const billingDue = async () => {
 
           for (const bill of notPaidBills) {
             //skip if the bill has a latefee already applied or the due time is not done
-            if (bill.lateFeeStatus === true || bill.due_date < today) {
+            if (bill.lateFeeStatus === true || bill.due_date > today) {
               continue
             }
             bill.latefee =
-              bill.amount * bill.apartment.building.condominium.latefee_amount
-
+              bill.amount * (bill.apartment.building.condominium.latefee_amount / 100)
             bill.status = BillStatus.OVERDUE
             bill.lateFeeStatus = true
             await billService.save(bill)

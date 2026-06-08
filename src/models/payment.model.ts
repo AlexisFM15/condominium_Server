@@ -10,8 +10,8 @@ import { Payment_Method, Payment_type } from '../utils/enums.js'
 
 @Entity()
 export class Payment {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string
+  @PrimaryGeneratedColumn('identity')
+  id!: number
 
   @Column({ type: 'text' })
   description!: string

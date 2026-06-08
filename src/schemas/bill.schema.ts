@@ -7,9 +7,11 @@ export const createBillSchema = z.object({
   due_date: z.coerce.date(),
   year: z.string().min(1),
   month: z.string().min(1),
-  gas_pic: z.string().min(1),
+  credited_amount: z.number().positive().optional(),
+  gas_pic: z.string().optional(),
   apartmentId: z.coerce.number().int().positive(),
   gas_metric: z.number().positive(),
+  gas_total: z.number().positive(),
   latefee: z.number().positive(),
   lateFeeStatus: z.boolean(),
 })
@@ -17,6 +19,7 @@ export const createBillSchema = z.object({
 export const updateBillSchema = z.object({
   amount: z.number().positive().optional(),
   status: z.enum(BillStatus).optional(),
+  credited_amount: z.number().positive().optional(),
   due_date: z.coerce.date().optional(),
   year: z.string().min(1).optional(),
   month: z.string().min(1).optional(),

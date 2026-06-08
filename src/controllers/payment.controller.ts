@@ -5,7 +5,7 @@ import {
   paymentParamsSchema,
   createExtraPaymentSchema,
 } from '../schemas/payment.schema.js'
-import { paymentService } from '../services/payment.service.js'
+import { deletePaymentT, paymentService } from '../services/payment.service.js'
 import { createPaymentT } from '../services/payment.service.js'
 import { Payment } from '../models/payment.model.js'
 import { MovemntType } from '../utils/enums.js'
@@ -106,7 +106,7 @@ export const deletePayment = async (ctx: Context) => {
       ctx.throw(404, 'payment not found')
     }
 
-    await paymentService.softRemove(payment)
+    await deletePaymentT(params.id)
 
     ctx.status = 204
   } catch (error) {

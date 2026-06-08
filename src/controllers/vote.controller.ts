@@ -112,3 +112,22 @@ export const deleteVote = async (ctx: Context) => {
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
+
+export const getVoteByUser = async (ctx: Context) => {
+const userId = ctx.state.user.userId
+  try {
+    const vote = await voteService.find({
+      where: { user: userId },
+      relations: ['user', 'poll'],
+    })
+
+    if (!vote) {
+      ctx.throw(404, 'vote not found')
+    }
+
+    ctx.body = vote
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
+  }
+}

@@ -45,6 +45,8 @@ export class Bill {
   @Column({ type: 'boolean', default: false })
   lateFeeStatus!: boolean
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  credited_amount!: number
   //timestamps
 
   @CreateDateColumn()

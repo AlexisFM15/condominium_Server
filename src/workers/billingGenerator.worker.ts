@@ -9,16 +9,18 @@ import { monthly_balanceService } from '../services/monthly_balance.service.js'
 // to generate a draft to this monthly bills
 export const billsMonthlyGenereation = async () => {
   await database.initializeDB()
-  const today = new Date()
 
   try {
-    const lastBillMonth = await billService.findLast()
-    const lastMonthBalance = await monthly_balanceService.findLast()
-
     const job = CronJob.from({
       cronTime: '0 0 * * *',
-      // '0 0 * * *', // -> every night at midnight
+
       onTick: async () => {
+        const today = new Date()
+
+        const lastBillMonth = await billService.findLast()
+        const lastMonthBalance =
+          await monthly_balanceService.findLast()
+
         if (
           lastMonthBalance?.month !==
           today.toLocaleString('es-DO', { month: 'long' })
@@ -27,36 +29,77 @@ export const billsMonthlyGenereation = async () => {
             income: 0,
             expoenses: 0,
             year: `${today.getFullYear()}`,
-            month: `${today.toLocaleString('es-DO', { month: 'long' })}`,
+            month: `${today.toLocaleString('es-DO', {
+              month: 'long',
+            })}`,
             total: 0,
           }
+
           await monthly_balanceService.save(newMonthlyBalance)
         }
+
         if (
           lastBillMonth?.month !==
           today.toLocaleString('es-DO', { month: 'long' })
         ) {
-          const apartment = await apartmentService.findForBills()
-          // create a bill to every apartment existent
-          for (const apa of apartment) {
-            const bill = await billService.create({
-              amount: apa.rent + apa.building.serviceCost,
-              status: BillStatus.DRAFT,
-              due_date: '0000-00-00',
-              year: `${today.getFullYear()}`,
-              month: `${today.toLocaleString('es-DO', { month: 'long' })}`,
-              gas_metric: 0,
-              gas_total: 0,
-              gas_pic: '',
-              apartment: { id: apa.id },
-            })
-            await billService.save(bill)
+          const apartments =
+            await apartmentService.findForBills()
+
+          for (const apa of apartments) {
+            const queryRunner =
+              database.appDataSource.createQueryRunner()
+
+            await queryRunner.connect()
+            await queryRunner.startTransaction()
+
+            try {
+              const discount = Math.min(
+                Number(apa.user.balance),
+                Number(apa.serviceCost),
+              )
+
+              const finalAmount =
+                Number(apa.serviceCost) - Number(discount)
+
+              const bill = billService.create({
+                amount: finalAmount + apa.building.condominium.promo,
+                credited_amount: discount,
+                status: BillStatus.DRAFT,
+                due_date: '0000-00-00',
+                year: `${today.getFullYear()}`,
+                month: `${today.toLocaleString('es-DO', {
+                  month: 'long',
+                })}`,
+                gas_metric: 0,
+                gas_total: 0,
+                gas_pic: '',
+                apartment: { id: apa.id },
+              })
+
+              await queryRunner.manager.save(bill)
+
+              // descontar balance usado
+              apa.user.balance =
+                Number(apa.user.balance) -
+                Number(discount)
+
+              await queryRunner.manager.save(apa.user)
+
+              await queryRunner.commitTransaction()
+            } catch (error) {
+              await queryRunner.rollbackTransaction()
+              console.log(error)
+            } finally {
+              await queryRunner.release()
+            }
           }
         }
       },
+
       start: true,
       timeZone: 'America/Santo_Domingo',
     })
+
     return job
   } catch (error) {
     console.log(error)

@@ -11,8 +11,8 @@ import { BillStatus, MovemntType } from '../utils/enums.js'
 import { sendBillEmail } from '../helpers/mailing.js'
 import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
 import { apartmentService } from '../services/apartment.service.js'
-import { monthly_balanceService } from '../services/monthly_balance.service.js'
 import { createPaymentT } from '../services/payment.service.js'
+import { calculateGasBill } from '../utils/gasFormat.js'
 
 // CREATE
 export const createBill = async (ctx: Context) => {
@@ -38,6 +38,7 @@ export const createBill = async (ctx: Context) => {
     ctx.body = bill
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
@@ -159,6 +160,7 @@ export const sendBill = async (ctx: Context) => {
       today.getDate() + apartmentUser?.building.condominium.time_limit_days!,
     )
 
+    const gas = calculateGasBill(apartmentUser?.lastGasMetric!, result.data.gasMetric, apartmentUser?.building.condominium.latefee_amount!)
     const newGasMetric = {
       lastGasMetric: result.data.gasMetric,
     }
@@ -166,6 +168,7 @@ export const sendBill = async (ctx: Context) => {
       gas_metric: result.data.gasMetric,
       due_date: dueDate,
       gas_pic: result.data.gas_pic!,
+      gas_total: gas.amount
     }
 
     await billService.save(newbill)
@@ -175,7 +178,7 @@ export const sendBill = async (ctx: Context) => {
       subjects.billSubject,
       apartmentUser?.user.email!,
       htmlBIlls(
-        bill.amount,
+        bill.amount + gas.amount,
         bill.due_date,
         bill.year,
         bill.month,
@@ -192,8 +195,8 @@ export const sendBill = async (ctx: Context) => {
 
 //pay bills
 export const payBill = async (ctx: Context) => {
+
   const resultParams = billParamsSchema.parse(ctx.params)
-  // const result =
   const { reference, payment_method } = ctx.request.body
   try {
     const bill = await billService.findOneByPendingStatus(resultParams.id)
@@ -201,15 +204,8 @@ export const payBill = async (ctx: Context) => {
     if (!bill) {
       ctx.throw(404, 'not Found')
     }
-    bill!.status = BillStatus.PAID
+    bill.status = BillStatus.PAID
     await billService.save(bill)
-
-    const monthlyBalance = await monthly_balanceService.findOne({
-      where: { month: bill.month },
-    })
-    if (!monthlyBalance) {
-      ctx.throw(404, 'not Found')
-    }
 
     const newPayment = {
       amount: bill.amount + bill.gas_total,
@@ -220,7 +216,7 @@ export const payBill = async (ctx: Context) => {
       payment_method,
     }
 
-    const payment = await createPaymentT(newPayment, MovemntType.INCOME)
+    await createPaymentT(newPayment, MovemntType.INCOME)
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }

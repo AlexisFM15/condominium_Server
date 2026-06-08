@@ -15,7 +15,7 @@ const router = new Router({
   prefix: '/bills',
 })
 
-router.post('/', auth, admin, createBill)
+router.post('/', createBill)
 router.get('/', auth, Operador, getBills)
 router.get('/:id', auth, getBillById)
 router.put('/:id', auth, admin, updateBill)

@@ -36,6 +36,9 @@ export class Apartment {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   lastGasMetric!: number
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  serviceCost!: number
+
   //timestamps
 
   @CreateDateColumn()

@@ -29,6 +29,12 @@ export class Poll {
   @Column({ type: 'enum', enum: PollStatus, default: PollStatus.CLOSE })
   status!: string
 
+  @Column({ type: 'int',default: 0 })
+votesFor!: number
+
+@Column({ type: 'int', default: 0 })
+votesAgainst!: number
+
   //timestamps
 
   @CreateDateColumn()

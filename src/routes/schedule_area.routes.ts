@@ -15,9 +15,9 @@ const router = new Router({
 })
 
 router.post('/', auth, createsShedule_area)
-router.get('/', auth, Operador, getSchedule_areas)
-router.get('/:id', auth, getSchedule_areaById)
-router.put('/:id', auth, updateSchedule_area)
-router.delete('/:id', auth, deleteSchedule_area)
+router.get('/', Operador, getSchedule_areas)
+router.get('/:id', Operador, getSchedule_areaById)
+router.patch('/:id', admin, updateSchedule_area)
+router.delete('/:id', admin, deleteSchedule_area)
 
 export default router

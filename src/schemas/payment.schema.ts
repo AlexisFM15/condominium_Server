@@ -20,7 +20,7 @@ export const updatePaymentSchema = z.object({
 })
 
 export const paymentParamsSchema = z.object({
-  id: z.uuid(),
+  id: z.number().positive(),
 })
 
 export const createExtraPaymentSchema = z.object({

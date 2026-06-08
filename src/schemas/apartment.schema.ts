@@ -8,6 +8,7 @@ export const createApartmentSchema = z.object({
   rent: z.number().positive().optional(),
   lastGasMetric: z.number().positive().optional(),
   buildingId: z.number().int().positive(),
+  serviceCost: z.number().positive(),
   userId: z.uuid().optional(),
 })
 
@@ -16,6 +17,7 @@ export const updateApartmentSchema = z.object({
   occupancyType: z.enum(occupancyType).optional(),
   rent: z.number().positive().optional(),
   lastGasMetric: z.number().positive().optional(),
+  serviceCost: z.number().positive().optional(),
   buildingId: z.number().int().positive().optional(),
   userId: z.uuid().optional(),
 })

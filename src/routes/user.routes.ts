@@ -13,10 +13,10 @@ const router = new Router({
   prefix: '/users',
 })
 
-router.post('/', auth, admin, createUser)
-router.get('/', auth, getUsers)
+router.post('/', createUser)
+router.get('/',  getUsers)
 router.get('/:id', auth, admin, getUserById)
-router.patch('/:id', auth, admin, updateUser)
+router.patch('/:id',  updateUser)
 router.delete('/:id', auth, admin, deleteUser)
 
 export default router
