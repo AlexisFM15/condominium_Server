@@ -90,6 +90,7 @@ export const updatePoll = async (ctx: Context) => {
 
     ctx.body = poll
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

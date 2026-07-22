@@ -16,6 +16,7 @@ import { Vote } from './vote.model.js'
 import { Schedule_area } from './schedule_area.model.js'
 import { Session } from './session.model.js'
 import { Incident } from './incidents.model.js'
+import { nullable } from 'zod'
 
 @Entity()
 export class User {
@@ -64,7 +65,9 @@ export class User {
   @OneToMany(() => Poll, (poll) => poll.user)
   poll!: Poll[]
 
-  @OneToOne(() => Apartment, (apartment) => apartment.user)
+  @OneToOne(() => Apartment, (apartment) => apartment.user, {
+  nullable: true,
+})
   apartment!: Apartment
 
   @OneToMany(() => Schedule_area, (schedule_area) => schedule_area.user)

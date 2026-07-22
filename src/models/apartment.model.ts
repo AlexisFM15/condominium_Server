@@ -58,7 +58,9 @@ export class Apartment {
   @ManyToOne(() => Building, (building) => building.apartment)
   building!: Building
 
-  @OneToOne(() => User, (user) => user.apartment)
+  @OneToOne(() => User, (user) => user.apartment , {
+  nullable: true,
+})
   @JoinColumn()
   user!: User
 }

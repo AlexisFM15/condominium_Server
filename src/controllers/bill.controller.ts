@@ -104,6 +104,7 @@ export const updateBill = async (ctx: Context) => {
     ctx.body = bill
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
@@ -168,7 +169,8 @@ export const sendBill = async (ctx: Context) => {
       gas_metric: result.data.gasMetric,
       due_date: dueDate,
       gas_pic: result.data.gas_pic!,
-      gas_total: gas.amount
+      gas_total: gas.amount,
+      
     }
 
     await billService.save(newbill)
@@ -198,6 +200,7 @@ export const payBill = async (ctx: Context) => {
 
   const resultParams = billParamsSchema.parse(ctx.params)
   const { reference, payment_method } = ctx.request.body
+  console.log(reference, payment_method, resultParams)
   try {
     const bill = await billService.findOneByPendingStatus(resultParams.id)
 
@@ -217,9 +220,10 @@ export const payBill = async (ctx: Context) => {
     }
 
     await createPaymentT(newPayment, MovemntType.INCOME)
+    console.log(bill)
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
-    console.log(error)
   }
 }

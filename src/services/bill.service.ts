@@ -25,6 +25,7 @@ export const billService = database.appDataSource.getRepository(Bill).extend({
     return this.createQueryBuilder('Bill')
       .where('Bill.status = :status', { status: BillStatus.PENDING })
       .andWhere('Bill.id = :id', { id: id })
+      .leftJoinAndSelect('Bill.apartment', 'Apartment')
       .getOne()
   },
   findOneByPendingStatusValidation() {

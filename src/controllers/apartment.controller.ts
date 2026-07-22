@@ -7,6 +7,8 @@ import {
 import { apartmentService } from '../services/apartment.service.js'
 import { Apartment } from '../models/apartment.model.js'
 import { occupancyType } from '../utils/enums.js'
+import { Building } from '../models/building.model.js'
+import { User } from '../models/user.model.js'
 
 // CREATE
 export const createApartment = async (ctx: Context) => {
@@ -79,6 +81,7 @@ export const updateApartment = async (ctx: Context) => {
   try {
     const result = updateApartmentSchema.safeParse(ctx.request.body)
 
+    console.log(result)
     if (!result.success) {
       ctx.throw(400, result.error)
     }
@@ -91,13 +94,34 @@ export const updateApartment = async (ctx: Context) => {
       ctx.throw(404, 'apartment not found')
     }
 
-    apartmentService.merge(apartment, result.data as Partial<Apartment>)
-    await apartmentService.save(apartment)
+    apartmentService.merge(apartment, {
+  number: result.data.number,
+  rent: result.data.rent,
+  occupancyType: result.data.occupancyType,
+  serviceCost: result.data.serviceCost,
+  lastGasMetric: result.data.lastGasMetric,
+})
+
+if (result.data.buildingId) {
+  apartment.building = {
+    id: result.data.buildingId,
+  } as Building
+}
+
+if (result.data.userId) {
+  apartment.user = {
+    id: result.data.userId,
+  } as User
+}
+
+await apartmentService.save(apartment)
 
     ctx.body = apartment
+    console.log(apartment)
   } catch (error) {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+    console.log(error)
   }
 }
 

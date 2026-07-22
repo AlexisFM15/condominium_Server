@@ -15,10 +15,10 @@ const router = new Router({
 })
 
 router.post('/', Operador,createPoll)
-router.get('/s',  auth, getPolls)
+router.get('/',  auth, getPolls)
 router.get('/open',auth, getPollByActiveStatus)
 router.get('/:id', getPollById)
-router.put('/:id', Operador, updatePoll)
+router.patch('/:id', Operador, updatePoll)
 router.delete('/:id',  Operador, deletePoll)
 
 export default router

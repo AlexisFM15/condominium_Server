@@ -16,7 +16,7 @@ const router = new Router({
 router.post('/',  createArea)
 router.get('/', auth, Operador, getAreas)
 router.get('/:id', auth, getAreaById)
-router.put('/:id', auth, Operador, updateArea)
+router.patch('/:id', auth, Operador, updateArea)
 router.delete('/:id', auth, Operador, deleteArea)
 
 export default router

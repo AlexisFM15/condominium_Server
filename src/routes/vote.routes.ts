@@ -16,7 +16,7 @@ const router = new Router({
 router.post('/', auth , createVote)
 router.get('/', auth, Operador, getVotes)
 router.get('/:id', auth, getVoteById)
-router.put('/:id', auth, Operador, updateVote)
+router.patch('/:id', auth, Operador, updateVote)
 router.delete('/:id', auth, Operador, deleteVote)
 
 export default router

@@ -6,6 +6,7 @@ import {
   updateBill,
   deleteBill,
   sendBill,
+  payBill,
 } from '../controllers/bill.controller.js'
 import { auth } from '../middlewares/auth.middleware.js'
 import { admin } from '../middlewares/admin.middleware.js'
@@ -16,10 +17,11 @@ const router = new Router({
 })
 
 router.post('/', createBill)
-router.get('/', auth, Operador, getBills)
+router.get('/',  Operador, getBills)
 router.get('/:id', auth, getBillById)
-router.put('/:id', auth, admin, updateBill)
-router.delete('/:id', auth, admin, deleteBill)
-router.put('/send/:id', auth, Operador, sendBill)
+router.patch('/:id', admin, updateBill)
+router.delete('/:id',  admin, deleteBill)
+router.patch('/send/:id',Operador, sendBill)
+router.post('/paybill/:id', Operador, payBill)
 
 export default router

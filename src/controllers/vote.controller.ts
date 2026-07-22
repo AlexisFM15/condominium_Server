@@ -128,6 +128,7 @@ export const updateVote = async (ctx: Context) => {
 
     ctx.body = vote
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

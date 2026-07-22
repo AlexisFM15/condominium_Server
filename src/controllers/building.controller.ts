@@ -27,6 +27,7 @@ export const createBuilding = async (ctx: Context) => {
     ctx.body = building
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }

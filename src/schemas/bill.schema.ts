@@ -10,9 +10,9 @@ export const createBillSchema = z.object({
   credited_amount: z.number().positive().optional(),
   gas_pic: z.string().optional(),
   apartmentId: z.coerce.number().int().positive(),
-  gas_metric: z.number().positive(),
-  gas_total: z.number().positive(),
-  latefee: z.number().positive(),
+  gas_metric: z.number(),
+  gas_total: z.number(),
+  latefee: z.number(),
   lateFeeStatus: z.boolean(),
 })
 

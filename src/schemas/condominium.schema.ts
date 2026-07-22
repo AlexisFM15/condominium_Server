@@ -14,10 +14,10 @@ export const createCondominiumSchema = z.object({
 export const updateCondominiumSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  latefee_amount: z.number().positive().optional(),
-  time_limit_days: z.number().positive().optional(),
-  invoicesDate: z.number().positive().optional(),
-  promo: z.number().positive().optional(),
+  latefee_amount: z.coerce.number().positive().optional(),
+  time_limit_days: z.coerce.number().positive().optional(),
+  invoicesDate: z.coerce.number().positive().optional(),
+  promo: z.coerce.number().positive().optional(),
 })
 
 // Params (id)
