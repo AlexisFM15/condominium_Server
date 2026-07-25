@@ -14,6 +14,7 @@ import serviceRoutes from './service.routes.js'
 // import sessionRoutes from './session.routes.js'
 import userRoutes from './user.routes.js'
 import voteRoutes from './vote.routes.js'
+import incidenciaRoutes from './incidencia.routes.js'
 
 const router = new Router()
 
@@ -61,5 +62,8 @@ router.use(userRoutes.allowedMethods())
 
 router.use(voteRoutes.routes())
 router.use(voteRoutes.allowedMethods())
+
+router.use(incidenciaRoutes.routes())
+router.use(incidenciaRoutes.allowedMethods())
 
 export default router

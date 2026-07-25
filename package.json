@@ -20,6 +20,7 @@
     "@types/koa": "^3.0.1",
     "@types/koa-bodyparser": "^4.3.13",
     "@types/koa-cookie": "^1.0.3",
+    "@types/koa__cors": "^5.0.1",
     "@types/node": "^25.3.5",
     "esbuild": "^0.27.3",
     "prettier": "^3.8.1",

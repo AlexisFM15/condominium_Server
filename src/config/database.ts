@@ -14,6 +14,7 @@ import { User } from '../models/user.model.js'
 import { Vote } from '../models/vote.model.js'
 import { Session } from '../models/session.model.js'
 import { Condominium } from '../models/condominium.model.js'
+import { Incidencia } from '../models/incidencia.model.js'
 
 const appDataSource = new DataSource({
   type: 'postgres',
@@ -21,8 +22,8 @@ const appDataSource = new DataSource({
   host: process.env.DB_HOST!,
   port: parseInt(process.env.DB_PORT!),
   username: process.env.DB_USER!,
-  password: process.env.DB_PASSWORD!,
-  entities: [
+  password: "minimo",
+ entities: [
     Apartment,
     Area,
     Bill,
@@ -37,6 +38,7 @@ const appDataSource = new DataSource({
     Vote,
     Session,
     Condominium,
+    Incidencia,
   ],
   synchronize: true,
   migrations: ['src/migrations/*{.ts,.js}'],
