@@ -13,62 +13,89 @@ import { userService } from '../services/user.service.js'
 // CREATE
 export const createVote = async (ctx: Context) => {
   const result = createVoteSchema.safeParse(ctx.request.body)
-  console.log(result)
+
+  if (!result.success) {
+    ctx.throw(400, result.error)
+  }
+
   const userId = ctx.state.user.userId
+
   try {
- const user = await userService.findOne({
-  where: {
-    id: userId,
-  },
-})
+    const user = await userService.findOne({
+      where: { id: userId },
+    })
 
-if (!user) {
-  ctx.throw(404, 'User not found')
-}
+    if (!user) ctx.throw(404, 'User not found')
 
-const poll = await pollService.findOne({
-  where: {
-    id: result.data!.pollId,
-  },
-})
+    const poll = await pollService.findOne({
+      where: { id: result.data.pollId },
+    })
 
-if (!poll) {
-  ctx.throw(404, 'Poll not found')
-}
+    if (!poll) ctx.throw(404, 'Poll not found')
 
-console.log({
-  vote: result.data?.vote,
-  user,
-  poll,
-})
+    // Buscar si ya existe un voto
+    const existingVote = await voteService.findOne({
+      where: {
+        user: { id: user.id },
+        poll: { id: poll.id },
+      },
+      relations: ['user', 'poll'],
+    })
 
-const vote = voteService.create({
-  vote: result.data!.vote,
-  user,
-  poll
-})
+    if (existingVote) {
+      // Si no cambió el voto
+      if (existingVote.vote === result.data.vote) {
+        ctx.body = existingVote
+        return
+      }
 
-await voteService.save(vote)
-if (!poll) {
-  ctx.throw(404, 'Poll not found')
-}
+      // Restar el voto anterior
+      if (existingVote.vote === VoteType.FAVOR) {
+        poll.votesFor--
+      } else {
+        poll.votesAgainst--
+      }
+
+      // Sumar el nuevo voto
+      if (result.data.vote === VoteType.FAVOR) {
+        poll.votesFor++
+      } else {
+        poll.votesAgainst++
+      }
+
+      existingVote.vote = result.data.vote
+
+      await voteService.save(existingVote)
+      await pollService.save(poll)
+
+      ctx.body = existingVote
+      return
+    }
+
+    // Crear voto por primera vez
+    const vote = voteService.create({
+      vote: result.data.vote,
+      user,
+      poll,
+    })
+
+    await voteService.save(vote)
+
     if (vote.vote === VoteType.FAVOR) {
       poll.votesFor++
-} else {
-  poll.votesAgainst++
-}
+    } else {
+      poll.votesAgainst++
+    }
 
-await pollService.save(poll)
+    await pollService.save(poll)
 
     ctx.status = 201
     ctx.body = vote
   } catch (error) {
-    ctx.status = 500
-    console.log(error)
-    ctx.body = { message: 'Error to conect to the server' }
+    console.error(error)
+    ctx.throw(500, 'Error connecting to the server')
   }
 }
-
 // GET ALL
 export const getVotes = async (ctx: Context) => {
   try {
@@ -147,7 +174,7 @@ export const deleteVote = async (ctx: Context) => {
       ctx.throw(404, 'vote not found')
     }
 
-    await voteService.softRemove(vote)
+    await voteService.delete(vote)
 
     ctx.status = 204
   } catch (error) {

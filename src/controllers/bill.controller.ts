@@ -13,6 +13,7 @@ import { htmlBIlls, subjects } from '../utils/emailsFormart.js'
 import { apartmentService } from '../services/apartment.service.js'
 import { createPaymentT } from '../services/payment.service.js'
 import { calculateGasBill } from '../utils/gasFormat.js'
+import { StorageService } from '../services/storage.service.js'
 
 // CREATE
 export const createBill = async (ctx: Context) => {
@@ -23,23 +24,38 @@ export const createBill = async (ctx: Context) => {
       ctx.throw(400, result.error)
     }
 
+    let gasPic: string | null = null
+
+    if (ctx.file) {
+      const uploaded = await StorageService.upload(ctx.file)
+      gasPic = uploaded.url
+    }
+
     const bill = billService.create({
       amount: result.data.amount,
       status: result.data.status || BillStatus.PENDING,
       due_date: result.data.due_date,
       year: result.data.year,
       month: result.data.month,
-      gas_pic: result.data.gas_pic,
-      apartment: { id: result.data.apartmentId },
+
+      gas_pic: gasPic,
+
+      apartment: {
+        id: result.data.apartmentId,
+      },
     })
+
     await billService.save(bill)
 
     ctx.status = 201
     ctx.body = bill
   } catch (error) {
+    console.error(error)
+
     ctx.status = 500
-    console.log(error)
-    ctx.body = { message: 'Error to conect to the server' }
+    ctx.body = {
+      message: 'Error connecting to the server',
+    }
   }
 }
 
@@ -84,6 +100,8 @@ export const updateBill = async (ctx: Context) => {
   const params = billParamsSchema.parse(ctx.params)
 
   try {
+    console.log(ctx.file)
+
     const result = updateBillSchema.safeParse(ctx.request.body)
 
     if (!result.success) {
@@ -92,20 +110,42 @@ export const updateBill = async (ctx: Context) => {
 
     const bill = await billService.findOne({
       where: { id: params.id },
+      relations: ['apartment'],
     })
 
     if (!bill) {
-      ctx.throw(404, 'bill not found')
+      ctx.throw(404, 'Bill not found')
     }
 
-    billService.merge(bill, result.data as Partial<Bill>)
+    // ← SUBIR LA IMAGEN SI EXISTE
+    if (ctx.file) {
+      const uploaded = await StorageService.upload(ctx.file)
+
+      bill.gas_pic = uploaded.url
+    }
+
+    const { apartmentId, ...billData } = result.data
+
+    billService.merge(bill, billData as Partial<Bill>)
+
+    if (apartmentId) {
+      const apartment = await apartmentService.findOne({
+        where: { id: apartmentId },
+      })
+
+      if (!apartment) {
+        ctx.throw(404, 'Apartment not found')
+      }
+
+      bill.apartment = apartment
+    }
+
     await billService.save(bill)
 
     ctx.body = bill
   } catch (error) {
-    ctx.status = 500
-    console.log(error)
-    ctx.body = { message: 'Error to conect to the server' }
+    console.error(error)
+    ctx.throw(500, 'Error connecting to the server')
   }
 }
 

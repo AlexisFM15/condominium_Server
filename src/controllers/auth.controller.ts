@@ -8,7 +8,7 @@ import { sessionService } from '../services/session.service.js'
 export const login = async (ctx: Context) => {
   const { email, password } = ctx.request.body as Login
   try {
-    const user: User = await userService.findByEmail(email)
+    const user = await userService.findByEmail(email)
 
     if (!user) {
       ctx.status = 400
@@ -43,7 +43,19 @@ export const login = async (ctx: Context) => {
 
     ctx.cookies.set('refreshToken', rhToken)
     ctx.status = 200
-    ctx.body = { message: 'Access succeed', token: acToken }
+    ctx.status = 200
+ctx.body = {
+  message: 'Access succeed',
+  data: {
+    token: acToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      defaultPassword: user.defaultPassword,
+    },
+  },
+}
     return
   } catch (error) {
     ctx.status = 500
