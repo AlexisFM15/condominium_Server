@@ -16,7 +16,7 @@ const router = new Router({
 router.post('/', createBuilding)
 router.get('/',  Operador, getBuildings)
 router.get('/:id', Operador, getBuildingById)
-router.put('/:id', admin, updateBuilding)
+router.patch('/:id', admin, updateBuilding)
 router.delete('/:id', admin, deleteBuilding)
-
+ 
 export default router

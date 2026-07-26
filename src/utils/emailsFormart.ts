@@ -2,7 +2,7 @@
 export enum subjects {
   billSubject = 'Factura Generada',
   areaSubject = 'Reserva de area común',
-  registerSubject = 'bienvenida a ----',
+  registerSubject = 'bienvenid@ a Grupo Mateo Genao',
   resetPasswordSubject = 'Reset de contraseña',
 }
 
