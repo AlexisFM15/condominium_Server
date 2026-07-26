@@ -33,4 +33,22 @@ export const billService = database.appDataSource.getRepository(Bill).extend({
       .where('Bill.status = :status', { status: BillStatus.PENDING })
       .getOne()
   },
+
+  findUnpaidLastBills() {
+    return this.createQueryBuilder('Bill')
+      .where('Bill.status IN (:...statuses)', {
+        statuses: [BillStatus.PENDING, BillStatus.OVERDUE],
+      })
+      .leftJoinAndSelect('Bill.apartment', 'Apartment')
+      .leftJoinAndSelect('Apartment.building', 'Building')
+      .leftJoinAndSelect('Building.condominium', 'Condominium')
+      .leftJoinAndSelect('Apartment.user', 'User')
+      .getMany()
+  },
+  findByApartmentAndYear(apartmentId: number, year: string) {
+    return this.createQueryBuilder('Bill')
+      .where('Bill.apartment = :apartmentId', { apartmentId })
+      .andWhere('Bill.year = :year', { year })
+      .getMany()
+  },
 })

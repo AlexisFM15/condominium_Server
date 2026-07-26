@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/index.ts",
     "billGenWorker": "tsx watch src/workers/billingGenerator.worker.ts",
-    "billDueWorker": "tsx watch src/workers/billingDue.worker.ts"
+    "billDueWorker": "tsx watch src/workers/billingDue.worker.ts",
+    "morosityReportWorker": "tsx watch src/workers/morosityReport.worker.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "@types/koa-cookie": "^1.0.3",
     "@types/koa__cors": "^5.0.1",
     "@types/node": "^25.3.5",
+    "@types/pdfkit": "^0.17.6",
     "esbuild": "^0.27.3",
     "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
@@ -41,6 +43,7 @@
     "koa-cookie": "^1.0.0",
     "koa-helmet": "^9.0.0",
     "koa-logger": "^4.0.0",
+    "pdfkit": "^0.19.1",
     "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
     "resend": "^6.9.4",
