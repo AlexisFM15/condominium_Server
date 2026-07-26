@@ -15,6 +15,26 @@ const MONTHS_SHORT = [
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
 ]
 
+const HEADER_BLUE = '#37426d'
+const RED_TEXT = '#dc2626'
+
+
+
+const drawPageBorder = (doc: PDFKit.PDFDocument) => {
+  const margin = 15
+  doc
+    .lineWidth(2)
+    .rect(margin, margin, doc.page.width - margin * 2, doc.page.height - margin * 2)
+    .stroke()
+
+  doc.lineWidth(0.75)
+  doc
+    .rect(margin + 4, margin + 4, doc.page.width - (margin + 4) * 2, doc.page.height - (margin + 4) * 2)
+    .stroke()
+
+  doc.lineWidth(1) // resetea el grosor para el resto del contenido
+}
+
 const generateMorosityReport = async () => {
   const today = new Date()
   const year = `${today.getFullYear()}`
@@ -41,7 +61,7 @@ const generateMorosityReport = async () => {
   for (const apa of apartments) {
     const bills = await billService.findByApartmentAndYear(apa.id, year)
     const row = MONTHS.map((monthName) => {
-      const bill = bills.find((b) => b.month === monthName)
+      const bill = bills.find((b) => b.month.toLowerCase() === monthName.toLowerCase())
       return bill ? bill.status : '-'
     })
     matrix[apa.id] = row
@@ -56,28 +76,35 @@ const generateMorosityReport = async () => {
   const fileName = `morosos-${year}-${String(today.getMonth() + 1).padStart(2, '0')}.pdf`
   const filePath = path.join(reportsDir, fileName)
 
-  const doc = new PDFDocument({ margin: 30, layout: 'landscape', size: 'A4' })
-  doc.pipe(fs.createWriteStream(filePath))
+ const doc = new PDFDocument({ margin: 40, layout: 'landscape', size: 'A4' })
+  const stream = fs.createWriteStream(filePath)
+  doc.pipe(stream)
 
-  doc.fontSize(16).text(`Reporte de morosidad - ${year}`, { align: 'center' })
-  doc.moveDown(1)
+  drawPageBorder(doc)
+
+  doc.font('Helvetica-Bold').fontSize(24).text(`Reporte de morosidad - ${year}`, { align: 'center' })
+  doc.moveDown(1.5)
 
   const firstColWidth = 140
   const otherColsWidth = (doc.page.width - doc.page.margins.left - doc.page.margins.right - firstColWidth) / 12
   const rowHeight = 22
 
-  const drawHeader = (y: number) => {
+const drawHeader = (y: number) => {
     let x = doc.page.margins.left
     doc.fontSize(9).font('Helvetica-Bold')
-    doc.rect(x, y, firstColWidth, rowHeight).stroke()
-    doc.text('Apartamento', x + 4, y + 6, { width: firstColWidth - 8 })
+
+    // celda "Apartamento"
+    doc.rect(x, y, firstColWidth, rowHeight).fillAndStroke(HEADER_BLUE, 'black')
+    doc.fillColor('white').text('Apartamento', x + 4, y + 6, { width: firstColWidth - 8 })
     x += firstColWidth
 
     for (const m of MONTHS_SHORT) {
-      doc.rect(x, y, otherColsWidth, rowHeight).stroke()
-      doc.text(m, x + 2, y + 6, { width: otherColsWidth - 4, align: 'center' })
+      doc.rect(x, y, otherColsWidth, rowHeight).fillAndStroke(HEADER_BLUE, 'black')
+      doc.fillColor('white').text(m, x + 2, y + 6, { width: otherColsWidth - 4, align: 'center' })
       x += otherColsWidth
     }
+
+    doc.fillColor('black')
   }
 
   let y = doc.y
@@ -87,32 +114,50 @@ const generateMorosityReport = async () => {
   doc.font('Helvetica').fontSize(8)
 
   for (const apa of apartments) {
-    if (y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+   if (y + rowHeight > doc.page.height - doc.page.margins.bottom) {
       doc.addPage()
+      drawPageBorder(doc)
       y = doc.page.margins.top
       drawHeader(y)
       y += rowHeight
       doc.font('Helvetica').fontSize(8)
     }
 
-    let x = doc.page.margins.left
+   let x = doc.page.margins.left
     const label = `${apa.building?.name ?? ''} - Apto ${apa.number}`
 
-    doc.rect(x, y, firstColWidth, rowHeight).stroke()
+    // celda del nombre del apartamento, fondo azul y texto blanco
+    doc.rect(x, y, firstColWidth, rowHeight).fill(HEADER_BLUE)
+    doc.font('Helvetica-Bold').fillColor('white')
     doc.text(label, x + 4, y + 6, { width: firstColWidth - 8 })
     x += firstColWidth
 
     const row = matrix[apa.id] ?? []
     for (const status of row) {
+      const isPendiente = status === 'Pendiente'
+
       doc.rect(x, y, otherColsWidth, rowHeight).stroke()
+
+      if (isPendiente) {
+        doc.font('Helvetica-Bold').fillColor(RED_TEXT)
+      } else {
+        doc.font('Helvetica').fillColor('black')
+      }
+
       doc.text(status, x + 2, y + 6, { width: otherColsWidth - 4, align: 'center' })
       x += otherColsWidth
     }
 
+    doc.font('Helvetica').fillColor('black') // resetea para la siguiente fila
     y += rowHeight
   }
 
-  doc.end()
+ doc.end()
+
+  await new Promise<void>((resolve, reject) => {
+    stream.on('finish', () => resolve())
+    stream.on('error', reject)
+  })
 
   console.log(`Reporte de morosidad generado: ${filePath}`)
 }
@@ -141,11 +186,5 @@ const morosityReportWorker = async () => {
   }
 }
 
-// morosityReportWorker() // cron real, comentado para prueba
+ morosityReportWorker() 
 
-// SOLO PARA PROBAR - borra esto después:
-;(async () => {
-  await database.initializeDB()
-  await generateMorosityReport()
-  process.exit(0)
-})()
