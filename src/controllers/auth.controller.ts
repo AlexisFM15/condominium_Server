@@ -10,23 +10,27 @@ export const login = async (ctx: Context) => {
   try {
     const user = await userService.findByEmail(email)
 
+    console.log('EMAIL RECIBIDO:', email)
+console.log('USUARIO:', user)
+
     if (!user) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
-
+console.log('PASSWORD INPUT:', password)
+console.log('HASH DB:', user.User_password)
     const passwordValidation = await validatePassword(
       password,
       user.User_password,
     )
 
+    console.log('PASSWORD MATCH:', passwordValidation)
     if (!passwordValidation) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
-
     //accessToken
     const acToken = accessToken(user.User_id!)
     //refreshToken
@@ -47,7 +51,7 @@ export const login = async (ctx: Context) => {
 ctx.body = {
   message: 'Access succeed',
   data: {
-    token: acToken,
+    accessToken: acToken,
     user: {
       id: user.id,
       email: user.email,
