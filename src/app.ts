@@ -12,8 +12,13 @@ app.use(
     credentials: true,
   }),
 )
+
 app.use(bodyParser())
 
+app.use(async (ctx, next) => {
+  console.log(`${ctx.method} ${ctx.url}`)
+  await next()
+})
 //routes config
 app.use(router.routes())
 app.use(router.allowedMethods())
