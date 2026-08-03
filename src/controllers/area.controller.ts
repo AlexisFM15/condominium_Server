@@ -68,42 +68,55 @@ export const getAreaById = async (ctx: Context) => {
 }
 
 // UPDATE
+import { Bill } from '../models/bill.model.js'
+import { billService } from '../services/bill.service.js'
+import { apartmentService } from '../services/apartment.service.js'
+import { billParamsSchema, updateBillSchema } from '../schemas/bill.schema.js'
+
 export const updateArea = async (ctx: Context) => {
-  const params = areaParamsSchema.parse(ctx.params)
+  const params = billParamsSchema.parse(ctx.params)
 
   try {
-    const result = updateAreaSchema.safeParse(ctx.request.body)
-    console.log(result)
+    const result = updateBillSchema.safeParse(ctx.request.body)
 
     if (!result.success) {
       ctx.throw(400, result.error)
     }
 
-    const area = await areaService.findOne({
-  where: { id: params.id },
-  relations: ['condominium'],
-})
+    const bill = await billService.findOne({
+      where: { id: params.id },
+      relations: ['apartment'],
+    })
 
-if (!area) {
-  ctx.throw(404, 'area not found')
-}
+    if (!bill) {
+      ctx.throw(404, 'Bill not found')
+    }
 
-areaService.merge(area, {
-  name: result.data.name,
-  description: result.data.description,
-})
+    const { apartmentId, ...billData } = result.data
 
-if (result.data.condominiumId) {
-  area.condominium = {
-    id: result.data.condominiumId,
-  } as Condominium
-}
-await areaService.save(area)
-    ctx.body = area
+    billService.merge(bill, billData as Partial<Bill>)
+
+    if (apartmentId) {
+      const apartment = await apartmentService.findOne({
+        where: { id: apartmentId },
+      })
+
+      if (!apartment) {
+        ctx.throw(404, 'Apartment not found')
+      }
+
+      bill.apartment = apartment
+    }
+
+    await billService.save(bill)
+
+    ctx.body = bill
   } catch (error) {
-    console.log(error)
+    console.error(error)
     ctx.status = 500
-    ctx.body = { message: 'Error to conect to the server' }
+    ctx.body = {
+      message: 'Error connecting to the server',
+    }
   }
 }
 
