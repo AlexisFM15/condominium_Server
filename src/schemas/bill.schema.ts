@@ -13,21 +13,21 @@ export const createBillSchema = z.object({
   gas_metric: z.coerce.number(),
   gas_total: z.coerce.number(),
   latefee: z.coerce.number(),
-  lateFeeStatus: z.boolean(),
+  lateFeeStatus: z.coerce.boolean(),
 })
 
 export const updateBillSchema = z.object({
-  amount: z.coerce.number().positive().optional(),
+  amount: z.coerce.number().optional(),
   status: z.enum(BillStatus).optional(),
-  credited_amount: z.coerce.number().positive().optional(),
+  credited_amount: z.coerce.number().optional(),
   due_date: z.coerce.date().optional(),
   year: z.string().min(1).optional(),
   month: z.string().min(1).optional(),
   gas_pic: z.string().min(1).optional(),
   apartmentId: z.coerce.number().int().positive().optional(),
-  gas_metric: z.coerce.number().positive(),
-  latefee: z.coerce.number().positive(),
-  lateFeeStatus: z.coerce.boolean(),
+  gas_metric: z.coerce.number().optional(),
+  latefee: z.coerce.number().optional(),
+  lateFeeStatus: z.coerce.boolean().optional(),
 })
 
 export const sendBillSchema = z.object({

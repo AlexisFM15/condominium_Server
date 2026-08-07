@@ -11,7 +11,7 @@ export const createUserSchema = z.object({
   defaultPassword: z.boolean().optional(),
 
   // relaciones
-  apartmentId: z.coerce.number().int().positive().optional(),
+  apartmentId: z.coerce.number().int().optional(),
 
 })
 
@@ -25,7 +25,7 @@ export const updateUserSchema = z.object({
   role: z.enum(Rol).optional(),
 
   // relaciones
-  apartmentId: z.coerce.number().int().positive().optional(),
+  apartmentId: z.coerce.number().int().optional(),
   // condominiumId: z.coerce.number().int().positive().optional(),
 
   // flags
