@@ -1,0 +1,84 @@
+import {
+  PrimaryGeneratedColumn,
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  Index,
+  OneToMany,
+  OneToOne,
+} from 'typeorm'
+import { Rol } from '../utils/enums.js'
+import { Poll } from './poll.model.js'
+import { Apartment } from './apartment.model.js'
+import { Vote } from './vote.model.js'
+import { Schedule_area } from './schedule_area.model.js'
+import { Session } from './session.model.js'
+import { Incident } from './incidents.model.js'
+import { nullable } from 'zod'
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string
+
+  @Column({ nullable: false, type: 'varchar' })
+  name!: string
+
+  @Column({ nullable: false, type: 'varchar' })
+  lastname!: string
+
+  @Index({ unique: true })
+  @Column({ nullable: false, type: 'varchar' })
+  phone!: string
+
+  @Index({ unique: true })
+  @Column({ nullable: false, type: 'varchar' })
+  email!: string
+
+  @Column({ nullable: false, type: 'varchar' })
+  password!: string
+
+  @Column({ type: 'enum', enum: Rol, default: [Rol.CONDOMINIUM] })
+  role!: Rol
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default : 0 })
+  balance!: number
+
+  @Column({ type: 'boolean', default: true })
+  defaultPassword!: boolean
+
+  //timestamps
+
+  @CreateDateColumn()
+  fecha_registro!: Date
+
+  @UpdateDateColumn()
+  fecha_actualizacion!: Date
+
+  @DeleteDateColumn()
+  fecha_eliminado!: Date
+
+  //relations
+
+  @OneToMany(() => Poll, (poll) => poll.user)
+  poll!: Poll[]
+
+  @OneToOne(() => Apartment, (apartment) => apartment.user, {
+  nullable: true,
+})
+  apartment!: Apartment
+
+  @OneToMany(() => Schedule_area, (schedule_area) => schedule_area.user)
+  schedule_area!: Schedule_area[]
+
+  @OneToMany(() => Vote, (vote) => vote.user)
+  vote!: Vote[]
+
+  @OneToMany(() => Session, (session) => session.user)
+  session!: Session[]
+
+  // @OneToMany(() => Incident, (incident) => incident.createdBy)
+  // incidents!: Incident[]
+}
