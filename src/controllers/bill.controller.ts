@@ -181,6 +181,8 @@ export const sendBill = async (ctx: Context) => {
       ctx.throw(400, result.error)
     }
 
+    console.log(result)
+
     const bill = await billService.findOne({
       where: { id: params.id },
       relations: ['apartment'],
@@ -218,6 +220,7 @@ export const sendBill = async (ctx: Context) => {
     /*
      * ACTUALIZAR FACTURA
      */
+    bill.status = BillStatus.PENDING
     bill.gas_metric = result.data.gasMetric
     bill.due_date = dueDate
     bill.gas_total = gas.amount
@@ -260,6 +263,7 @@ export const sendBill = async (ctx: Context) => {
       ),
     )
 
+    console.log(bill)
     ctx.status = 200
     ctx.body = bill
   } catch (error) {
