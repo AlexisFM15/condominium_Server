@@ -8,25 +8,29 @@ import { sessionService } from '../services/session.service.js'
 export const login = async (ctx: Context) => {
   const { email, password } = ctx.request.body as Login
   try {
-    const user: User = await userService.findByEmail(email)
+    const user = await userService.findByEmail(email)
+
+    console.log('EMAIL RECIBIDO:', email)
+console.log('USUARIO:', user)
 
     if (!user) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
-
+console.log('PASSWORD INPUT:', password)
+console.log('HASH DB:', user.User_password)
     const passwordValidation = await validatePassword(
       password,
       user.User_password,
     )
 
+    console.log('PASSWORD MATCH:', passwordValidation)
     if (!passwordValidation) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
-
     //accessToken
     const acToken = accessToken(user.User_id!)
     //refreshToken
@@ -43,7 +47,19 @@ export const login = async (ctx: Context) => {
 
     ctx.cookies.set('refreshToken', rhToken)
     ctx.status = 200
-    ctx.body = { message: 'Access succeed', token: acToken }
+    ctx.status = 200
+ctx.body = {
+  message: 'Access succeed',
+  data: {
+    accessToken: acToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      defaultPassword: user.defaultPassword,
+    },
+  },
+}
     return
   } catch (error) {
     ctx.status = 500

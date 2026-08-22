@@ -6,15 +6,34 @@ import router from './routes/index.routes.js'
 
 const app = new koa()
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://app.mateogenao.com',
+]
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: (ctx) => {
+      const requestOrigin = ctx.get('Origin')
+
+      if (allowedOrigins.includes(requestOrigin)) {
+        return requestOrigin
+      }
+
+      return ''
+    },
     credentials: true,
   }),
 )
+
 app.use(bodyParser())
 
-//routes config
+app.use(async (ctx, next) => {
+  console.log(`${ctx.method} ${ctx.url}`)
+  await next()
+})
+
+// routes config
 app.use(router.routes())
 app.use(router.allowedMethods())
 

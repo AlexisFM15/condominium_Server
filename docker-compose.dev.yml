@@ -1,42 +1,64 @@
-
-
 services:
-
   api:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     container_name: condominio_api_dev
-    ports:
-      - "${PORT}:3000"
+    restart: unless-stopped
     env_file:
       - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    ports:
+      - "${PORT}:3200"
     volumes:
       - .:/app
       - /app/node_modules
     command: pnpm dev
     depends_on:
       - postgres
-      # - redis
-    
-  worker:
-    build: .
-    container_name: worker
+
+  bill-generator-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: condominio_bill_generator_worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+      - /app/node_modules
     command: pnpm billGenWorker
     depends_on:
       - postgres
 
-  worker2:
-    build: .
-    container_name: worker2
+  bill-due-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: condominio_bill_due_worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+      - /app/node_modules
     command: pnpm billDueWorker
     depends_on:
       - postgres
-      
+
   postgres:
     image: postgres:16
     container_name: condominio_postgres_dev
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -48,12 +70,5 @@ services:
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
 
-#   # redis:
-#   #   image: redis:7
-#   #   container_name: condominio_redis_dev
-#   #   ports:
-#   #     - "6377:6377"
-
 volumes:
   postgres_dev_data:
-#   node_modules:

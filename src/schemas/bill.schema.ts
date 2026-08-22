@@ -2,32 +2,32 @@ import { z } from 'zod'
 import { BillStatus, MovemntType } from '../utils/enums.js'
 
 export const createBillSchema = z.object({
-  amount: z.number().positive(),
+  amount: z.coerce.number().positive(),
   status: z.enum(BillStatus).optional(),
   due_date: z.coerce.date(),
   year: z.string().min(1),
   month: z.string().min(1),
-  credited_amount: z.number().positive().optional(),
+  credited_amount: z.coerce.number().positive().optional(),
   gas_pic: z.string().optional(),
   apartmentId: z.coerce.number().int().positive(),
-  gas_metric: z.number(),
-  gas_total: z.number(),
-  latefee: z.number(),
-  lateFeeStatus: z.boolean(),
+  gas_metric: z.coerce.number(),
+  gas_total: z.coerce.number(),
+  latefee: z.coerce.number(),
+  lateFeeStatus: z.coerce.boolean(),
 })
 
 export const updateBillSchema = z.object({
-  amount: z.number().positive().optional(),
+  amount: z.coerce.number().optional(),
   status: z.enum(BillStatus).optional(),
-  credited_amount: z.number().positive().optional(),
+  credited_amount: z.coerce.number().optional(),
   due_date: z.coerce.date().optional(),
   year: z.string().min(1).optional(),
   month: z.string().min(1).optional(),
   gas_pic: z.string().min(1).optional(),
   apartmentId: z.coerce.number().int().positive().optional(),
-  gas_metric: z.number().positive(),
-  latefee: z.number().positive(),
-  lateFeeStatus: z.boolean(),
+  gas_metric: z.coerce.number().optional(),
+  latefee: z.coerce.number().optional(),
+  lateFeeStatus: z.coerce.boolean().optional(),
 })
 
 export const sendBillSchema = z.object({
