@@ -10,22 +10,16 @@ export const login = async (ctx: Context) => {
   try {
     const user = await userService.findByEmail(email)
 
-    console.log('EMAIL RECIBIDO:', email)
-console.log('USUARIO:', user)
-
     if (!user) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
-console.log('PASSWORD INPUT:', password)
-console.log('HASH DB:', user.User_password)
     const passwordValidation = await validatePassword(
       password,
       user.User_password,
     )
 
-    console.log('PASSWORD MATCH:', passwordValidation)
     if (!passwordValidation) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
@@ -44,7 +38,7 @@ console.log('HASH DB:', user.User_password)
     }
 
     await sessionService.save(newSession)
-
+console.log(user)
     ctx.cookies.set('refreshToken', rhToken)
     ctx.status = 200
     ctx.status = 200
@@ -53,10 +47,10 @@ ctx.body = {
   data: {
     accessToken: acToken,
     user: {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      defaultPassword: user.defaultPassword,
+      id: user.User_id,
+      email: user.User_email,
+      role: user.User_role,
+      defaultPassword: user.User_defaultPassword,
     },
   },
 }
