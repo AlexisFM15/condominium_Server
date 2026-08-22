@@ -9,6 +9,7 @@ import { User } from '../models/user.model.js'
 import { Rol } from '../utils/enums.js'
 import crypto from 'crypto'
 import { hashPassword } from '../libs/bcrypt.js'
+import { resetPasswordSchema } from '../schemas/resetPassword.schema.js'
 import { registerCredentialsHtml } from '../utils/passwordEmailFormat.js'
 import { subjects } from '../utils/emailsFormart.js'
 import { sendBillEmail } from '../helpers/mailing.js'
@@ -143,5 +144,40 @@ export const deleteUser = async (ctx: Context) => {
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
     console.log(error)
+  }
+}
+
+
+export const resetPassword = async (ctx: Context) => {
+  const result = resetPasswordSchema.safeParse(ctx.request.body)
+
+  try {
+    if (!result.success) {
+      ctx.throw(400, result.error)
+    }
+
+    const userId = ctx.state.user.userId
+
+    const user = await userService.findOneBy({ id: userId })
+
+    if (!user) {
+      ctx.throw(404, 'user not found')
+    }
+
+    const hashedPassword = await hashPassword(result.data.newPassword)
+
+    userService.merge(user, {
+      password: hashedPassword,
+      defaultPassword: false,
+    })
+
+    await userService.save(user)
+
+    ctx.status = 200
+    ctx.body = { message: 'Contraseña actualizada correctamente' }
+  } catch (error) {
+    console.log(error)
+    ctx.status = 500
+    ctx.body = { message: 'Error to conect to the server' }
   }
 }
