@@ -7,7 +7,7 @@ export const createUserSchema = z.object({
   phone: z.string().min(1),
   email: z.email(),
   role: z.enum(Rol).optional(),
-  balance: z.number().positive(),
+  balance: z.number().optional(),
   defaultPassword: z.boolean().optional(),
 
   // relaciones
@@ -20,7 +20,7 @@ export const updateUserSchema = z.object({
   lastname: z.string().min(1).optional(),
   phone: z.string().min(1).optional(),
   email: z.email().optional(),
-  balance: z.coerce.number().positive().optional(),  
+  balance: z.coerce.number().optional(),  
   defaultPassword: z.boolean().optional(),
   role: z.enum(Rol).optional(),
 
