@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 
-const resendApiKey = process.env.RESEND_API_KEY
+const resendApiKey = process.env.RESEND_API_KEY!
+const email =  process.env.DEFAULT_EMAIL!
 
 const resend = new Resend(resendApiKey)
 
@@ -10,7 +11,7 @@ export const sendBillEmail = async (
   html: string,
 ) => {
   await resend.emails.send({
-    from: 'Acme <onboarding@resend.dev>',
+    from: 'Mateo Genao <noreply@mateogenao.com>',
     to: [user],
     subject: subject,
     html: html,

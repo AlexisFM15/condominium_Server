@@ -22,7 +22,7 @@ const appDataSource = new DataSource({
   host: process.env.DB_HOST!,
   port: parseInt(process.env.DB_PORT!),
   username: process.env.DB_USER!,
-  password: "root",
+  password: process.env.DB_PASSWORD!,
  entities: [
     Apartment,
     Area,

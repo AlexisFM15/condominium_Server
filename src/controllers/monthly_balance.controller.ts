@@ -23,6 +23,7 @@ export const createMonthly_balance = async (ctx: Context) => {
     ctx.body = monthly_balance
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }

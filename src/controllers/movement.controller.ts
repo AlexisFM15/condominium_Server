@@ -11,17 +11,24 @@ import { Movement } from '../models/movement.model.js'
 export const createMovement = async (ctx: Context) => {
   const result = createMovementSchema.safeParse(ctx.request.body)
 
+  console.log(result.data)
   try {
     if (!result.success) {
       ctx.throw(400, result.error)
     }
+    const movement = movementService.create({
+  type: result.data.type,
+  description: result.data.description,
+  amount: result.data.amount,
+  date: result.data.date,
+  monthly_balance: result.data.monthlyBalanceId
+})
 
-    const movement = movementService.create(result.data)
-    await movementService.save(movement)
-
+await movementService.save(movement)
     ctx.status = 201
     ctx.body = movement
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }

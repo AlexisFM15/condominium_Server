@@ -6,13 +6,12 @@ export const createUserSchema = z.object({
   lastname: z.string().min(1),
   phone: z.string().min(1),
   email: z.email(),
-  password: z.string().min(6),
   role: z.enum(Rol).optional(),
   balance: z.number().positive(),
   defaultPassword: z.boolean().optional(),
 
   // relaciones
-  apartmentId: z.coerce.number().int().positive().optional(),
+  apartmentId: z.coerce.number().int().optional(),
 
 })
 
@@ -21,13 +20,12 @@ export const updateUserSchema = z.object({
   lastname: z.string().min(1).optional(),
   phone: z.string().min(1).optional(),
   email: z.email().optional(),
-  balance: z.number().positive().optional(),
-  password: z.string().min(6).optional(),  
+  balance: z.coerce.number().positive().optional(),  
   defaultPassword: z.boolean().optional(),
   role: z.enum(Rol).optional(),
 
   // relaciones
-  apartmentId: z.coerce.number().int().positive().optional(),
+  apartmentId: z.coerce.number().int().optional(),
   // condominiumId: z.coerce.number().int().positive().optional(),
 
   // flags
