@@ -178,6 +178,7 @@ export const resetPassword = async (ctx: Context) => {
   } catch (error) {
     console.log(error)
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
