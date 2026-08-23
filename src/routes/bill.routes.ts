@@ -7,6 +7,8 @@ import {
   deleteBill,
   sendBill,
   payBill,
+  getDraftBills,
+  getPendingBills,
 } from '../controllers/bill.controller.js'
 import { auth } from '../middlewares/auth.middleware.js'
 import { admin } from '../middlewares/admin.middleware.js'
@@ -18,11 +20,14 @@ const router = new Router({
 })
 
 router.post('/',upload.single('gas_pic'), createBill)
+router.get('/draft', Operador, getDraftBills)
+router.get('/pending',Operador, getPendingBills)
 router.get('/',  Operador, getBills)
 router.get('/:id', auth, getBillById)
-router.patch('/:id', admin,upload.single('gas_pic'), updateBill)
+router.patch('/:id', upload.single('gas_pic'),admin, updateBill)
 router.delete('/:id',  admin, deleteBill)
 router.patch('/send/:id',Operador,upload.single('gas_pic'), sendBill)
 router.post('/paybill/:id', Operador, payBill)
+
 
 export default router

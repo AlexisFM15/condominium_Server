@@ -148,7 +148,6 @@ export const updateBill = async (ctx: Context) => {
     ctx.throw(500, 'Error connecting to the server')
   }
 }
-
 // DELETE (soft delete)
 export const deleteBill = async (ctx: Context) => {
   const params = billParamsSchema.parse(ctx.params)
@@ -172,106 +171,262 @@ export const deleteBill = async (ctx: Context) => {
 }
 
 export const sendBill = async (ctx: Context) => {
-  const params = billParamsSchema.parse(ctx.params)
-
   try {
-    const result = sendBillSchema.safeParse(ctx.request.body)
+    console.log('========== PATCH /bills/:id ==========')
 
-    if (!result.success) {
-      ctx.throw(400, result.error)
+    // --------------------------------------------------
+    // 1. VALIDAR PARAMS
+    // --------------------------------------------------
+
+    const paramsResult = billParamsSchema.safeParse(ctx.params)
+
+    if (!paramsResult.success) {
+      ctx.status = 400
+      ctx.body = {
+        message: 'Invalid bill id',
+        errors: paramsResult.error.flatten(),
+      }
+      return
     }
 
-    console.log(result)
+    const { id } = paramsResult.data
+
+    console.log('Bill ID:', id)
+
+    // --------------------------------------------------
+    // 2. VALIDAR BODY
+    // --------------------------------------------------
+
+    const bodyResult = sendBillSchema.safeParse(ctx.request.body)
+
+    if (!bodyResult.success) {
+      console.log('Body validation error:', bodyResult.error)
+
+      ctx.status = 400
+      ctx.body = {
+        message: 'Invalid request data',
+        errors: bodyResult.error.flatten(),
+      }
+
+      return
+    }
+
+    const data = bodyResult.data
+
+    console.log('Validated body:', data)
+
+    // --------------------------------------------------
+    // 3. BUSCAR FACTURA
+    // --------------------------------------------------
+
+    console.log('Searching bill...')
 
     const bill = await billService.findOne({
-      where: { id: params.id },
+      where: {
+        id,
+      },
       relations: ['apartment'],
     })
 
     if (!bill) {
-      ctx.throw(404, 'bill not found')
+      ctx.status = 404
+      ctx.body = {
+        message: 'Bill not found',
+      }
+
+      return
     }
 
-    const apartmentUser = await apartmentService.findForSendBill(bill.id)
+    console.log('Bill found:', bill.id)
 
-    if (!apartmentUser) {
-      ctx.throw(404, 'apartment user not found')
-    }
+    // --------------------------------------------------
+    // 4. BUSCAR INFORMACIÓN DEL APARTAMENTO
+    // --------------------------------------------------
 
-    /*
-     * CALCULAR FECHA DE VENCIMIENTO
-     */
-    const dueDate = new Date()
+    console.log('Searching apartment user...')
 
-    dueDate.setDate(
-      dueDate.getDate() +
-        apartmentUser.building.condominium.time_limit_days,
+    const apartmentUser = await apartmentService.findForSendBill(
+      bill.id,
     )
 
-    /*
-     * CALCULAR GAS
-     */
+    if (!apartmentUser) {
+      ctx.status = 404
+      ctx.body = {
+        message: 'Apartment user not found',
+      }
+
+      return
+    }
+
+    console.log('Apartment user found')
+
+    // --------------------------------------------------
+    // 5. FECHA DE VENCIMIENTO
+    // --------------------------------------------------
+
+    const dueDate = new Date()
+
+    const timeLimitDays =
+      apartmentUser.building.condominium.time_limit_days
+
+    dueDate.setDate(
+      dueDate.getDate() + timeLimitDays,
+    )
+
+    console.log('Due date:', dueDate)
+
+    // --------------------------------------------------
+    // 6. CALCULAR GAS
+    // --------------------------------------------------
+
+    console.log('Calculating gas...')
+
     const gas = calculateGasBill(
       apartmentUser.lastGasMetric,
-      result.data.gasMetric,
+      data.gasMetric,
       apartmentUser.building.condominium.latefee_amount,
     )
 
-    /*
-     * ACTUALIZAR FACTURA
-     */
-    bill.status = BillStatus.PENDING
-    bill.gas_metric = result.data.gasMetric
+    console.log('Gas result:', gas)
+
+    // --------------------------------------------------
+    // 7. ACTUALIZAR FACTURA
+    // --------------------------------------------------
+
+    bill.status = data.status ?? BillStatus.PENDING
+
+    bill.gas_metric = data.gasMetric
+
     bill.due_date = dueDate
+
     bill.gas_total = gas.amount
 
-    /*
-     * Si gas_pic viene directamente como string
-     */
-    if (result.data.gas_pic) {
-      bill.gas_pic = result.data.gas_pic
+    // --------------------------------------------------
+    // 8. SUBIR IMAGEN
+    // --------------------------------------------------
+
+    if (ctx.file) {
+      console.log('Uploading gas image...')
+
+      console.log({
+        fieldname: ctx.file.fieldname,
+        originalname: ctx.file.originalname,
+        mimetype: ctx.file.mimetype,
+        size: ctx.file.size,
+      })
+
+      const uploaded = await StorageService.upload(ctx.file)
+
+      console.log('Image uploaded:', uploaded)
+
+      bill.gas_pic = uploaded.url
+
+      console.log('gas_pic:', bill.gas_pic)
+    } else {
+      console.log('No gas image received')
     }
 
-    if (result.data.status) {
-      bill.status = result.data.status
-    }
+    // --------------------------------------------------
+    // 9. GUARDAR FACTURA
+    // --------------------------------------------------
 
-    /*
-     * GUARDAR FACTURA
-     */
-    await billService.save(bill)
+    console.log('Saving bill...')
 
-    /*
-     * ACTUALIZAR MÉTRICA DEL APARTAMENTO
-     */
-    apartmentUser.lastGasMetric = result.data.gasMetric
+    const savedBill = await billService.save(bill)
+
+    console.log('Bill saved:', savedBill)
+
+    // --------------------------------------------------
+    // 10. ACTUALIZAR MÉTRICA
+    // --------------------------------------------------
+
+    console.log('Updating apartment gas metric...')
+
+    apartmentUser.lastGasMetric = data.gasMetric
 
     await apartmentService.save(apartmentUser)
 
-    /*
-     * ENVIAR FACTURA POR EMAIL
-     */
-    await sendBillEmail(
-      subjects.billSubject,
-      apartmentUser.user.email,
-      htmlBIlls(
-        bill.amount + gas.amount,
-        bill.due_date,
-        bill.year,
-        bill.month,
-        bill.gas_pic,
-      ),
-    )
+    console.log('Apartment metric updated')
 
-    console.log(bill)
+    // --------------------------------------------------
+    // 11. RESPONDER AL CLIENTE
+    // --------------------------------------------------
+
     ctx.status = 200
-    ctx.body = bill
+
+    ctx.body = {
+      message: 'Bill sent successfully',
+      bill: savedBill,
+    }
+
+    // --------------------------------------------------
+    // 12. ENVIAR EMAIL
+    // --------------------------------------------------
+    //
+    // IMPORTANTE:
+    // El email NO debe impedir que el PATCH
+    // responda correctamente.
+    //
+    // --------------------------------------------------
+
+    try {
+      console.log('Sending bill email...')
+
+      await sendBillEmail(
+        subjects.billSubject,
+        apartmentUser.user.email,
+        htmlBIlls(
+          bill.amount + gas.amount,
+          bill.due_date,
+          bill.year,
+          bill.month,
+          bill.gas_pic,
+        ),
+      )
+
+      console.log('Bill email sent successfully')
+    } catch (emailError) {
+      console.error(
+        'Error sending bill email:',
+        emailError,
+      )
+    }
+
+    console.log('========== PATCH COMPLETED ==========')
   } catch (error) {
-    console.log(error)
+    console.error('========== PATCH ERROR ==========')
+    console.error(error)
+
+    // -----------------------------------------------
+    // Si Koa ya tiene un status de error, respetarlo
+    // -----------------------------------------------
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'status' in error &&
+      typeof error.status === 'number'
+    ) {
+      ctx.status = error.status
+
+      ctx.body = {
+        message:
+          'message' in error
+            ? error.message
+            : 'Request error',
+      }
+
+      return
+    }
+
+    // -----------------------------------------------
+    // Error inesperado
+    // -----------------------------------------------
 
     ctx.status = 500
+
     ctx.body = {
-      message: 'Error to conect to the server',
+      message: 'Internal server error',
     }
   }
 }
@@ -295,23 +450,67 @@ export const payBill = async (ctx: Context) => {
   amount:
     Number(String(bill.amount).replace(/\./g, '')) +
     Number(String(bill.gas_total ?? 0).replace(/\./g, '')),
-
   payment_date: bill.fecha_registro,
-
   description: `Pago de factura No.${bill.id} del apartamento No. ${bill.apartment.number}`,
-
   reference,
-
   paymentType: Payment_type.BILL,
-
   payment_method,
 }
 
     await createPaymentT(newPayment, MovemntType.INCOME)
-    console.log(bill)
+
+    await sendBillEmail(
+      subjects.billSubject,
+      'maximoalexisflorianmatos@gmail.com',
+      htmlBIlls(
+        bill.amount ,
+        bill.due_date,
+        bill.year,
+        bill.month,
+        bill.gas_pic,
+      ),
+    )
+    
   } catch (error) {
     console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
+  }
+}
+
+// GET BILLS - DRAFT
+export const getDraftBills = async (ctx: Context) => {
+  try {
+    const bills = await billService.find({
+      where: {
+        status: BillStatus.DRAFT,
+      },
+      relations: ['apartment'],
+    })
+
+    console.log(bills)
+    ctx.body = bills
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to connect to the server' }
+    console.log(error)
+  }
+}
+
+// GET BILLS - PENDING
+export const getPendingBills = async (ctx: Context) => {
+  try {
+    const bills = await billService.find({
+      where: {
+        status: BillStatus.PENDING,
+      },
+      relations: ['apartment'],
+    })
+
+    ctx.body = bills
+  } catch (error) {
+    ctx.status = 500
+    ctx.body = { message: 'Error to connect to the server' }
+    console.log(error)
   }
 }

@@ -43,7 +43,7 @@ export enum MovemntType {
 
 export enum PollStatus {
   OPEN = 'Abierta',
-  CLOSE = 'CERRADA',
+  CLOSE = 'Cerrada',
 }
 
 export enum VoteType {

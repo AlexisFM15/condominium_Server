@@ -1,11 +1,11 @@
 import { z } from 'zod'
 
 export const createMonthlyBalanceSchema = z.object({
-  income: z.number().positive(),
-  expense: z.number().positive(),
+  income: z.coerce.number(),
+  expense: z.coerce.number(),
   year: z.string().min(1, 'year is required'),
   month: z.string().min(1, 'Month is required'),
-  total: z.number(),
+  total: z.number().optional(),
 })
 
 export const updateMonthlyBalanceSchema = z.object({

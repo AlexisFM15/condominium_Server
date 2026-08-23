@@ -5,8 +5,8 @@ export const createPollSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   expires_at: z.coerce.date(),
-  votesFor: z.number(),
-  votesAgainst:z.number(),
+  votesFor: z.number().optional(),
+  votesAgainst:z.number().optional(),
   status: z.enum(PollStatus).optional(),
   userId: z.uuid(),
 })

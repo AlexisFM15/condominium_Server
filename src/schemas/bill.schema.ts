@@ -2,12 +2,12 @@ import { z } from 'zod'
 import { BillStatus, MovemntType } from '../utils/enums.js'
 
 export const createBillSchema = z.object({
-  amount: z.coerce.number().positive(),
+  amount: z.coerce.number(),
   status: z.enum(BillStatus).optional(),
   due_date: z.coerce.date(),
   year: z.string().min(1),
   month: z.string().min(1),
-  credited_amount: z.coerce.number().positive().optional(),
+  credited_amount: z.coerce.number().optional(),
   gas_pic: z.string().optional(),
   apartmentId: z.coerce.number().int().positive(),
   gas_metric: z.coerce.number(),
@@ -23,17 +23,19 @@ export const updateBillSchema = z.object({
   due_date: z.coerce.date().optional(),
   year: z.string().min(1).optional(),
   month: z.string().min(1).optional(),
-  gas_pic: z.string().min(1).optional(),
   apartmentId: z.coerce.number().int().positive().optional(),
   gas_metric: z.coerce.number().optional(),
+  gas_total: z.coerce.number().optional(),
   latefee: z.coerce.number().optional(),
-  lateFeeStatus: z.coerce.boolean().optional(),
+  lateFeeStatus: z
+    .string()
+    .transform((value) => value === 'true')
+    .optional(),
 })
-
 export const sendBillSchema = z.object({
   status: z.enum(BillStatus).optional(),
   gas_pic: z.string().min(1).optional(),
-  gasMetric: z.number().positive(),
+  gasMetric: z.coerce.number(),
 })
 
 export const payBills = z.object({

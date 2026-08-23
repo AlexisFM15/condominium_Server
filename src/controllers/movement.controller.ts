@@ -4,7 +4,7 @@ import {
   updateMovementSchema,
   movementParamsSchema,
 } from '../schemas/movement.schema.js'
-import { movementService } from '../services/movement.service.js'
+import { createMovementT, deleteMovementT, movementService } from '../services/movement.service.js'
 import { Movement } from '../models/movement.model.js'
 
 // CREATE
@@ -16,15 +16,9 @@ export const createMovement = async (ctx: Context) => {
     if (!result.success) {
       ctx.throw(400, result.error)
     }
-    const movement = movementService.create({
-  type: result.data.type,
-  description: result.data.description,
-  amount: result.data.amount,
-  date: result.data.date,
-  monthly_balance: result.data.monthlyBalanceId
-})
 
-await movementService.save(movement)
+    const movement = await createMovementT(result.data, result.data.type)
+
     ctx.status = 201
     ctx.body = movement
   } catch (error) {
@@ -111,8 +105,8 @@ export const deleteMovement = async (ctx: Context) => {
       ctx.throw(404, 'movement not found')
     }
 
-    await movementService.softRemove(movement)
-
+    await deleteMovementT(params.id)
+    
     ctx.status = 204
   } catch (error) {
     ctx.status = 500

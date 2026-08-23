@@ -68,34 +68,50 @@ export const getPollById = async (ctx: Context) => {
 
 // UPDATE
 export const updatePoll = async (ctx: Context) => {
-  const params = pollParamsSchema.parse(ctx.params)
-
   try {
+    const params = pollParamsSchema.parse(ctx.params)
+
     const result = updatePollSchema.safeParse(ctx.request.body)
 
     if (!result.success) {
-      ctx.throw(400, result.error)
+      ctx.status = 400
+      ctx.body = {
+        message: 'Invalid poll data',
+        errors: result.error.issues,
+      }
+      return
     }
 
     const poll = await pollService.findOne({
-      where: { id: params.id },
+      where: {
+        id: params.id,
+      },
     })
 
     if (!poll) {
-      ctx.throw(404, 'poll not found')
+      ctx.status = 404
+      ctx.body = {
+        message: 'Poll not found',
+      }
+      return
     }
 
     pollService.merge(poll, result.data as Partial<Poll>)
-    await pollService.save(poll)
 
-    ctx.body = poll
+    const updatedPoll = await pollService.save(poll)
+
+    ctx.status = 200
+    ctx.body = updatedPoll
+
   } catch (error) {
-    console.log(error)
+    console.error('Error updating poll:', error)
+
     ctx.status = 500
-    ctx.body = { message: 'Error to conect to the server' }
+    ctx.body = {
+      message: 'Error connecting to the server',
+    }
   }
 }
-
 // DELETE (soft delete)
 export const deletePoll = async (ctx: Context) => {
   const params = pollParamsSchema.parse(ctx.params)
@@ -146,5 +162,39 @@ export const getPollByActiveStatus = async (ctx: Context) => {
     console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to connect to the server' }
+  }
+}
+
+export const closePoll = async (ctx: Context) => {
+  try {
+    const params = pollParamsSchema.parse(ctx.params)
+
+    const poll = await pollService.findOne({
+      where: {
+        id: params.id,
+      },
+    })
+
+    if (!poll) {
+      ctx.status = 404
+      ctx.body = {
+        message: 'Poll not found',
+      }
+      return
+    }
+
+    poll.status = 'Cerrada'
+
+    const updatedPoll = await pollService.save(poll)
+
+    ctx.status = 200
+    ctx.body = updatedPoll
+  } catch (error) {
+    console.error('Error closing poll:', error)
+
+    ctx.status = 500
+    ctx.body = {
+      message: 'Error closing poll',
+    }
   }
 }
