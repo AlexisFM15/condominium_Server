@@ -8,13 +8,19 @@ import { sessionService } from '../services/session.service.js'
 export const login = async (ctx: Context) => {
   const { email, password } = ctx.request.body as Login
   try {
-    const user = await userService.findByEmail(email)
+    const normalizedEmail = email.trim().toLowerCase()
+    const user = await userService.findByEmail(normalizedEmail)
+
+       
 
     if (!user) {
       ctx.status = 400
       ctx.body = { message:'Credenciales incorrectas', data: []}
       return 
     }
+
+    
+
     const passwordValidation = await validatePassword(
       password,
       user.User_password,
