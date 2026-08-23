@@ -32,13 +32,12 @@ export const createPayment = async (ctx: Context) => {
 // GET ALL
 export const getPayments = async (ctx: Context) => {
   try {
-    const payments = await paymentService.find({
-      relations: [''],
-    })
+    const payments = await paymentService.find()
 
     ctx.body = payments
   } catch (error) {
     ctx.status = 500
+    console.log(error)
     ctx.body = { message: 'Error to conect to the server' }
   }
 }
@@ -50,7 +49,6 @@ export const getPaymentById = async (ctx: Context) => {
   try {
     const payment = await paymentService.findOne({
       where: { id: params.id },
-      relations: [''],
     })
 
     if (!payment) {
@@ -59,6 +57,7 @@ export const getPaymentById = async (ctx: Context) => {
 
     ctx.body = payment
   } catch (error) {
+    console.log(error)
     ctx.status = 500
     ctx.body = { message: 'Error to conect to the server' }
   }
@@ -111,6 +110,7 @@ export const deletePayment = async (ctx: Context) => {
     ctx.status = 204
   } catch (error) {
     ctx.status = 500
+    console.log(error) 
     ctx.body = { message: 'Error to conect to the server' }
   }
 }

@@ -80,37 +80,43 @@ export async function createPaymentT(data: any, type: MovemntType) {
 }
 
 export async function deletePaymentT(id: number) {
-  return await database.appDataSource.transaction(async(manager) => {
-     const payment = await manager.findOne(Payment, {
-    where: { id },
-  })
+  return await database.appDataSource.transaction(async (manager) => {
+    const payment = await manager.findOne(Payment, {
+      where: { id },
+    })
 
-  await manager.softRemove(id)
+    if (!payment) {
+      throw new Error('Payment not found')
+    }
 
-const movement = await manager.findOne(Movement, {
-  where: {
-    description: ILike(`%${id}%`),
-  }
-  })
+    await manager.softRemove(payment)   
 
-const balance = await manager.findOne(Montlhy_balance, {
-  where: {
-    id: movement!.monthly_balance.id
-  }
-  })
+    const movement = await manager.findOne(Movement, {
+      where: {
+        description: ILike(`%${id}%`),
+      },
+       relations: ['monthly_balance'],
+    })
 
-  if (!movement || !balance) {
-  throw new Error('Movement or balance not found')
-}
+    const balance = movement
+      ? await manager.findOne(Montlhy_balance, {
+          where: {
+            id: movement.monthly_balance.id,
+          },
+        })
+      : null
 
-   if (movement.type === MovemntType.EXPENSES) {
+    if (!movement || !balance) {
+      throw new Error('Movement or balance not found')
+    }
+
+    if (movement.type === MovemntType.EXPENSES) {
       balance.expense = Number(balance.expense) - Number(movement.amount)
-    } else if (movement!.type === MovemntType.INCOME) {
+    } else if (movement.type === MovemntType.INCOME) {
       balance.income = Number(balance.income) + Number(movement.amount)
     }
-  
-  await manager.softRemove(movement)
-  await manager.save(balance)
 
-})
+    await manager.softRemove(movement)
+    await manager.save(balance)
+  })
 }
