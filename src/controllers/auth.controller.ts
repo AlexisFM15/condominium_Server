@@ -11,8 +11,7 @@ export const login = async (ctx: Context) => {
     const normalizedEmail = email.trim().toLowerCase()
     const user = await userService.findByEmail(normalizedEmail)
 
-        console.log('EMAIL BUSCADO:', normalizedEmail)
-    console.log('USUARIO ENCONTRADO:', user)
+       
 
     if (!user) {
       ctx.status = 400
@@ -20,8 +19,7 @@ export const login = async (ctx: Context) => {
       return 
     }
 
-      console.log('PASSWORD INGRESADA:', password)
-    console.log('HASH EN BD:', user.User_password)
+    
 
     const passwordValidation = await validatePassword(
       password,
