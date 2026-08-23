@@ -21,5 +21,6 @@ router.get('/', auth, Operador, getPayments)
 router.get('/:id', auth, Operador, getPaymentById)
 router.put('/:id', auth, admin, updatePayment)
 router.delete('/:id', auth, admin, deletePayment)
+router.patch('/:id', auth, admin, updatePayment)
 
 export default router
